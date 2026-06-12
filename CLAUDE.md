@@ -436,6 +436,7 @@ This project may have hooks that auto-format code after writes or validate opera
 | Date | Tasks Completed | Files Changed | Notes |
 |------|-----------------|---------------|-------|
 | 2026-06-12 | Project created | CLAUDE.md | Initial setup |
+| 2026-06-12 | Full v1 build: design doc, CPI data pipeline, inflation math + tests, Icelandic formatting, layout/design system, salary form + persistence, summary cards, interactive SVG chart, verification, README | whole repo | 26 unit tests passing; Playwright-verified: zero external requests, 928.686 kr anchor scenario, multi-raise step, persistence, example-not-persisted, 390×844 mobile |
 
 ---
 
