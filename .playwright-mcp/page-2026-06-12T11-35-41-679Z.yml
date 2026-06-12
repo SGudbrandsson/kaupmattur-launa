@@ -1,0 +1,100 @@
+- main [ref=e3]:
+  - generic [ref=e4]:
+    - generic [ref=e5]: Kaupmáttur launa
+    - heading "Hvað eru launin þín raunverulega virði?" [level=1] [ref=e6]:
+      - text: Hvað eru launin þín
+      - emphasis [ref=e7]: raunverulega
+      - text: virði?
+    - paragraph [ref=e8]: Verðbólgan vinnur hljóðlega. Sláðu inn launin þín og sjáðu, mánuð fyrir mánuð, hvað þau kaupa í raun og veru í dag.
+  - generic [ref=e9]:
+    - generic [ref=e10]:
+      - img [ref=e11]
+      - text: Gögnin þín fara aldrei úr vafranum
+    - paragraph [ref=e14]: Engin netumferð, engar vafrakökur, engin greining — allt er reiknað í tækinu þínu.
+    - group [ref=e15]:
+      - generic "Hvernig get ég sannreynt það?" [ref=e16] [cursor=pointer]
+  - region "Launin þín" [ref=e17]:
+    - heading "Launin þín" [level=2] [ref=e18]
+    - paragraph [ref=e19]: Skráðu launin þín og hvenær þau voru sett — og bættu við hækkunum eftir því sem þær komu.
+    - generic [ref=e20]:
+      - generic [ref=e21]: Sýnidæmi
+      - generic [ref=e22]: Þetta er sýnidæmi — skiptu því út fyrir þín eigin laun.
+      - button "Prófa með mínum launum" [ref=e23] [cursor=pointer]
+    - generic [ref=e25]:
+      - generic [ref=e26]:
+        - generic [ref=e27]:
+          - generic [ref=e28]: Mánuður
+          - combobox "Mánuður" [ref=e29]:
+            - option "janúar" [selected]
+            - option "febrúar"
+            - option "mars"
+            - option "apríl"
+            - option "maí"
+            - option "júní"
+            - option "júlí"
+            - option "ágúst"
+            - option "september"
+            - option "október"
+            - option "nóvember"
+            - option "desember"
+        - generic [ref=e30]:
+          - generic [ref=e31]: Ár
+          - combobox "Ár" [ref=e32]:
+            - option "2026"
+            - option "2025"
+            - option "2024"
+            - option "2023" [selected]
+            - option "2022"
+            - option "2021"
+            - option "2020"
+            - option "2019"
+            - option "2018"
+            - option "2017"
+            - option "2016"
+            - option "2015"
+            - option "2014"
+            - option "2013"
+            - option "2012"
+            - option "2011"
+            - option "2010"
+            - option "2009"
+            - option "2008"
+            - option "2007"
+            - option "2006"
+            - option "2005"
+            - option "2004"
+            - option "2003"
+            - option "2002"
+            - option "2001"
+            - option "2000"
+            - option "1999"
+            - option "1998"
+            - option "1997"
+            - option "1996"
+            - option "1995"
+            - option "1994"
+            - option "1993"
+            - option "1992"
+            - option "1991"
+            - option "1990"
+            - option "1989"
+            - option "1988"
+      - generic [ref=e33]:
+        - generic [ref=e34]: Mánaðarlaun
+        - generic [ref=e35]:
+          - textbox "Mánaðarlaun kr. á mánuði" [ref=e36]:
+            - /placeholder: t.d. 800.000
+            - text: "800.000"
+          - generic: kr. á mánuði
+    - button "Bæta við launahækkun" [ref=e37] [cursor=pointer]: + Bæta við launahækkun
+  - generic [ref=e38]:
+    - heading "Hvernig er þetta reiknað?" [level=2] [ref=e39]
+    - paragraph [ref=e40]: Við notum vísitölu neysluverðs frá Hagstofu Íslands — sömu vísitölu og er notuð til verðtryggingar. Hún mælir hvað vörur og þjónusta kosta í hverjum mánuði og er áreiðanlegasti mælikvarðinn á það hvað krónan kaupir í raun.
+    - paragraph [ref=e41]: "Útreikningurinn er einfaldur: kaupmáttur launa sem voru sett í tilteknum mánuði er launin margfölduð með vísitölunni þá og deilt með vísitölunni nú. Ef vísitalan hefur hækkað um 7% frá því launin voru sett, kaupa þau um 7% minna í dag."
+    - generic [ref=e42]: kaupmáttur = laun × vísitala þá ÷ vísitala nú
+    - generic [ref=e43]:
+      - generic [ref=e44]: Gögn til og með maí 2026
+      - strong [ref=e45]: "Heimild:"
+      - text: Vísitala neysluverðs, Hagstofa Íslands (tafla VIS01000, grunnur 1988=100)
+      - text: Gögn sótt 12. júní 2026
+  - generic [ref=e46]: Þessi síða safnar engum upplýsingum. Launin þín verða eftir í vafranum þínum — þar sem þau eiga heima.
