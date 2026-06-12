@@ -84,7 +84,7 @@ describe("buildSeries", () => {
     expect(series.at(-1)!.real).toBeCloseTo((1000 * 110) / 200, 12);
   });
 
-  it("switches baseline exactly at each raise and resets the real line", () => {
+  it("keeps one continuous anchor: raises are measured in first-month kronur", () => {
     const series = buildSeries(
       [
         { month: "2025-01", amount: 1000 },
@@ -93,22 +93,36 @@ describe("buildSeries", () => {
       synthetic,
     );
     const byMonth = Object.fromEntries(series.map((p) => [p.month, p]));
-    // Just before the raise: still decaying against the 2025-01 baseline.
-    expect(byMonth["2025-03"].baselineMonth).toBe("2025-01");
+    // Before the raise: decaying against the 2025-01 anchor.
+    expect(byMonth["2025-03"].eventMonth).toBe("2025-01");
     expect(byMonth["2025-03"].nominal).toBe(1000);
     expect(byMonth["2025-03"].real).toBeCloseTo(1000 * (100 / 125), 12);
-    // At the raise: real resets to the new nominal.
-    expect(byMonth["2025-04"].baselineMonth).toBe("2025-04");
+    // At the raise: the new nominal is still expressed in anchor kronur,
+    // NOT reset to face value — 2000 buys what 1250 bought in January.
+    expect(byMonth["2025-04"].eventMonth).toBe("2025-04");
     expect(byMonth["2025-04"].nominal).toBe(2000);
-    expect(byMonth["2025-04"].real).toBe(2000);
-    // After the raise: decays against the new baseline.
-    expect(byMonth["2025-05"].real).toBeCloseTo(2000 * (160 / 200), 12);
+    expect(byMonth["2025-04"].real).toBeCloseTo(2000 * (100 / 160), 12);
+    // After the raise: continues decaying against the same anchor.
+    expect(byMonth["2025-05"].real).toBeCloseTo(2000 * (100 / 200), 12);
+  });
+
+  it("a raise that fails to beat inflation stays below the original real level", () => {
+    // +25% nominal raise while prices rose 60% since the anchor.
+    const series = buildSeries(
+      [
+        { month: "2025-01", amount: 1000 },
+        { month: "2025-04", amount: 1250 },
+      ],
+      synthetic,
+    );
+    const atRaise = series.find((p) => p.month === "2025-04")!;
+    expect(atRaise.real).toBeLessThan(1000);
   });
 
   it("handles an event in lastMonth itself: single point, real == nominal", () => {
     const series = buildSeries([{ month: "2025-05", amount: 900 }], synthetic);
     expect(series).toEqual([
-      { month: "2025-05", nominal: 900, real: 900, baselineMonth: "2025-05" },
+      { month: "2025-05", nominal: 900, real: 900, eventMonth: "2025-05" },
     ]);
   });
 

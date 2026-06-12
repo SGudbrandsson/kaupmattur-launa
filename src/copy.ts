@@ -46,6 +46,8 @@ export const copy = {
     tooltipReal: "Kaupmáttur",
     tooltipLoss: "Tap",
     raiseMarker: "Launabreyting",
+    anchorNote: (month: string) =>
+      `Raunvirðið er sýnt á verðlagi ${month}, þegar fyrstu launin voru sett — þannig sést hvort hækkanir halda í raun og veru í við verðbólguna.`,
   },
 
   summary: {

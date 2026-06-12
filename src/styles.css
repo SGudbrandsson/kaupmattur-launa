@@ -548,6 +548,14 @@ h2 {
   color: var(--coral-deep);
 }
 
+.chart-anchor-note {
+  margin: 0.75rem 0.25rem 0;
+  font-size: 0.875rem;
+  color: var(--ink-faint);
+  max-width: 36rem;
+  text-wrap: pretty;
+}
+
 .crosshair-line {
   stroke: var(--ink);
   stroke-opacity: 0.25;

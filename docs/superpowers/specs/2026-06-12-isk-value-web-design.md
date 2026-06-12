@@ -40,7 +40,7 @@ We use the monthly CPI **index values** (not annual inflation percentages) so th
 
 **Anchor example (validated against real data):** CPI was 635.5 in January 2025 and 684.3 in May 2026. So 1.000.000 kr. set in January 2025 had the purchasing power of ≈ **928.686 kr.** by May 2026 — a real loss of 7,1%. This example is pinned in a unit test.
 
-**Multiple raises:** the nominal salary is a step function over time. At each raise the *real* line resets to the new nominal amount (the new salary is measured in its own start-month kronur) and then decays until the next raise or today. Each month's baseline is the most recent raise on or before that month.
+**Multiple raises:** the nominal salary is a step function over time. The *real* line is one continuous story, anchored to the **first** entry's month: every value is expressed in the kronur of that month. Raises therefore appear exactly as large as they are in real terms — a raise that fails to beat inflation since the anchor visibly fails to reach the previous real level. (An earlier per-raise-baseline design, where the real line reset to nominal at each raise, was rejected after user review: the reset read as "value regained" and hid whether raises actually kept up.) The per-raise erosion view lives in the summary cards, each measured against its own start month.
 
 ## 3. Data pipeline
 
@@ -125,7 +125,7 @@ Friendly, plain Icelandic; second person singular; no fear-mongering and no fina
 X axis: months from the earliest salary event through the latest CPI month. Y axis: ISK.
 
 - **Nominal line** — the salary as paid: a step-after line, muted ink, 2px, rounded joins.
-- **Real-value line** — decays between raises, jumps at each raise. Straight monthly segments (no bezier smoothing across raise discontinuities).
+- **Real-value line** — continuous, anchored to the first entry's month; decays between raises and steps up by the raise's *real* size at each event. Straight monthly segments (no bezier smoothing across raise discontinuities). A caption under the chart states the anchor: *"Raunvirðið er sýnt á verðlagi <mánuður>…"*.
 - **Lost-value band** — the filled region between the two lines, soft coral gradient fading downward. This is the message: the band visibly widens month by month.
 - **Markers** — a dot + subtle hairline at each raise month; an *"í dag"* marker at the last month.
 - **Axes** — X ticks adapt to span (yearly, or every 3–6 months under two years); Y has 4–5 ticks with compact labels (*"950 þús."*, *"1,2 m.kr."*). Y domain is [0.95 × min, 1.03 × max] — deliberately not zero-based, because the meaning lives between the two lines and a 5–10% erosion must be readable. Hairline gridlines only.

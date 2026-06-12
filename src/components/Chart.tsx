@@ -132,7 +132,7 @@ export function Chart({ series }: ChartProps) {
 
   const raiseIndices = series
     .map((p, i) => ({ p, i }))
-    .filter(({ p }) => p.month === p.baselineMonth)
+    .filter(({ p }) => p.month === p.eventMonth)
     .map(({ i }) => i);
 
   const last = series.length - 1;
@@ -274,6 +274,7 @@ export function Chart({ series }: ChartProps) {
           )}
         </svg>
       </div>
+      <p class="chart-anchor-note">{c.anchorNote(formatMonth(series[0].month))}</p>
     </section>
   );
 }

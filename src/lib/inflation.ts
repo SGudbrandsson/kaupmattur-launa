@@ -15,10 +15,10 @@ export interface SeriesPoint {
   month: MonthKey;
   /** The salary as paid (step function of the events). */
   nominal: number;
-  /** Purchasing power expressed in baseline-month kronur. */
+  /** Purchasing power expressed in anchor-month kronur (the first event's month). */
   real: number;
-  /** The month of the event this point's purchasing power is measured against. */
-  baselineMonth: MonthKey;
+  /** The month of the most recent salary event on or before this point. */
+  eventMonth: MonthKey;
 }
 
 function index(cpi: CpiData, month: MonthKey): number {
@@ -65,28 +65,31 @@ export function requiredToday(
 
 /**
  * Monthly series from the earliest event through the latest CPI month.
- * Nominal is a step function; the real line resets to nominal at each
- * event and decays against that event's CPI until the next one.
- * Events must be within the CPI range; they are sorted internally.
+ * Nominal is a step function. The real line is one continuous story:
+ * every value is expressed in the kronur of the FIRST event's month
+ * (the anchor), so raises appear exactly as large as they are in real
+ * terms — a raise that fails to beat inflation visibly fails to reach
+ * the old level. Events must be within the CPI range; sorted internally.
  */
 export function buildSeries(events: SalaryEvent[], cpi: CpiData): SeriesPoint[] {
   if (events.length === 0) return [];
   const sorted = [...events].sort((a, b) => compareMonths(a.month, b.month));
+  const anchor = sorted[0].month;
   const points: SeriesPoint[] = [];
   let active = 0;
-  for (const month of monthRange(sorted[0].month, cpi.lastMonth)) {
+  for (const month of monthRange(anchor, cpi.lastMonth)) {
     while (
       active + 1 < sorted.length &&
       compareMonths(sorted[active + 1].month, month) <= 0
     ) {
       active++;
     }
-    const { month: baselineMonth, amount } = sorted[active];
+    const { month: eventMonth, amount } = sorted[active];
     points.push({
       month,
       nominal: amount,
-      baselineMonth,
-      real: realValue(amount, baselineMonth, month, cpi),
+      eventMonth,
+      real: realValue(amount, anchor, month, cpi),
     });
   }
   return points;
