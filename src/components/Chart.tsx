@@ -1,7 +1,14 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 import { copy } from "../copy";
 import type { SeriesPoint } from "../lib/inflation";
-import { formatCompactISK, formatMonthShort } from "../lib/format";
+import {
+  formatCompactISK,
+  formatISK,
+  formatISKDelta,
+  formatMonth,
+  formatMonthShort,
+  formatPercent,
+} from "../lib/format";
 
 interface ChartProps {
   series: SeriesPoint[];
@@ -42,6 +49,7 @@ function xTickIndices(series: SeriesPoint[]): { indices: number[]; step: number 
 export function Chart({ series }: ChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(640);
+  const [hover, setHover] = useState<number | null>(null);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -104,6 +112,20 @@ export function Chart({ series }: ChartProps) {
   const last = series.length - 1;
   const c = copy.chart;
 
+  // Re-keying this group restarts the entrance animation when data changes.
+  const seriesKey = `${series[0].month}|${last}|${raiseIndices.join(",")}|${series[0].nominal}`;
+
+  const indexFromEvent = (e: PointerEvent) => {
+    const svg = e.currentTarget as SVGElement;
+    const rect = svg.getBoundingClientRect();
+    const px = ((e.clientX - rect.left) / rect.width) * width;
+    const frac = (px - MARGIN.left) / innerW;
+    return Math.max(0, Math.min(last, Math.round(frac * last)));
+  };
+
+  const active = series[hover ?? last];
+  const loss = active.real - active.nominal;
+
   return (
     <section class="chart-section" aria-labelledby="chart-title">
       <h2 id="chart-title">{c.title}</h2>
@@ -119,12 +141,34 @@ export function Chart({ series }: ChartProps) {
         </span>
       </div>
       <div class="chart-card card" ref={containerRef}>
+        <div class="chart-readout numeric" aria-live="polite">
+          <span class="readout-month">
+            {hover === null ? c.today : formatMonth(active.month)}
+          </span>
+          <span class="readout-item">
+            <span class="readout-label">{c.tooltipNominal}</span>
+            {formatISK(active.nominal)}
+          </span>
+          <span class="readout-item readout-real">
+            <span class="readout-label">{c.tooltipReal}</span>
+            {formatISK(active.real)}
+          </span>
+          <span class="readout-item readout-loss">
+            <span class="readout-label">{c.tooltipLoss}</span>
+            {loss === 0
+              ? "—"
+              : `${formatISKDelta(loss)} (${formatPercent(active.real / active.nominal - 1)})`}
+          </span>
+        </div>
         <svg
           width="100%"
           height={height}
           viewBox={`0 0 ${width} ${height}`}
           role="img"
           aria-label={c.title}
+          onPointerMove={(e) => setHover(indexFromEvent(e))}
+          onPointerDown={(e) => setHover(indexFromEvent(e))}
+          onPointerLeave={() => setHover(null)}
         >
           <defs>
             <linearGradient id="loss-band" x1="0" y1="0" x2="0" y2="1">
@@ -156,9 +200,11 @@ export function Chart({ series }: ChartProps) {
             </text>
           ))}
 
-          <path d={bandPath} fill="url(#loss-band)" class="band" />
-          <path d={stepPath} class="line-nominal" />
-          <path d={realPath} class="line-real" />
+          <g key={seriesKey}>
+            <path d={bandPath} fill="url(#loss-band)" class="band" />
+            <path d={stepPath} class="line-nominal draw" pathLength={1} />
+            <path d={realPath} class="line-real draw" pathLength={1} />
+          </g>
 
           {raiseIndices.map((i) => (
             <g key={series[i].month}>
@@ -183,13 +229,23 @@ export function Chart({ series }: ChartProps) {
           ))}
 
           <circle cx={x(last)} cy={y(series[last].real)} r="4.5" class="today-dot" />
-          <text
-            x={x(last)}
-            y={y(series[last].real) - 12}
-            class="today-label"
-          >
+          <text x={x(last)} y={y(series[last].real) - 12} class="today-label">
             {c.today}
           </text>
+
+          {hover !== null && (
+            <g class="crosshair">
+              <line
+                x1={x(hover)}
+                x2={x(hover)}
+                y1={MARGIN.top}
+                y2={MARGIN.top + innerH}
+                class="crosshair-line"
+              />
+              <circle cx={x(hover)} cy={y(active.nominal)} r="4" class="crosshair-dot-nominal" />
+              <circle cx={x(hover)} cy={y(active.real)} r="4" class="crosshair-dot-real" />
+            </g>
+          )}
         </svg>
       </div>
     </section>
