@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   formatCompactISK,
+  formatDateLong,
   formatISK,
   formatISKDelta,
   formatMonth,
@@ -30,6 +31,10 @@ describe("formatMonth", () => {
     expect(formatMonth("2025-01")).toBe("janúar 2025");
     expect(formatMonth("2026-05")).toBe("maí 2026");
     expect(formatMonthShort("2025-01")).toBe("jan. 2025");
+  });
+
+  it("formats full dates in Icelandic", () => {
+    expect(formatDateLong("2026-06-12T10:30:00Z")).toBe("12. júní 2026");
   });
 });
 

@@ -1,0 +1,26 @@
+- main [ref=e3]:
+  - generic [ref=e4]:
+    - generic [ref=e5]: Kaupmáttur launa
+    - heading "Hvað eru launin þín raunverulega virði?" [level=1] [ref=e6]:
+      - text: Hvað eru launin þín
+      - emphasis [ref=e7]: raunverulega
+      - text: virði?
+    - paragraph [ref=e8]: Verðbólgan vinnur hljóðlega. Sláðu inn launin þín og sjáðu, mánuð fyrir mánuð, hvað þau kaupa í raun og veru í dag.
+  - generic [ref=e9]:
+    - generic [ref=e10]:
+      - img [ref=e11]
+      - text: Gögnin þín fara aldrei úr vafranum
+    - paragraph [ref=e14]: Engin netumferð, engar vafrakökur, engin greining — allt er reiknað í tækinu þínu.
+    - group [ref=e15]:
+      - generic "Hvernig get ég sannreynt það?" [ref=e16] [cursor=pointer]
+  - generic [ref=e17]:
+    - heading "Hvernig er þetta reiknað?" [level=2] [ref=e18]
+    - paragraph [ref=e19]: Við notum vísitölu neysluverðs frá Hagstofu Íslands — sömu vísitölu og er notuð til verðtryggingar. Hún mælir hvað vörur og þjónusta kosta í hverjum mánuði og er áreiðanlegasti mælikvarðinn á það hvað krónan kaupir í raun.
+    - paragraph [ref=e20]: "Útreikningurinn er einfaldur: kaupmáttur launa sem voru sett í tilteknum mánuði er launin margfölduð með vísitölunni þá og deilt með vísitölunni nú. Ef vísitalan hefur hækkað um 7% frá því launin voru sett, kaupa þau um 7% minna í dag."
+    - generic [ref=e21]: kaupmáttur = laun × vísitala þá ÷ vísitala nú
+    - generic [ref=e22]:
+      - generic [ref=e23]: Gögn til og með maí 2026
+      - strong [ref=e24]: "Heimild:"
+      - text: Vísitala neysluverðs, Hagstofa Íslands (tafla VIS01000, grunnur 1988=100)
+      - text: Gögn sótt 12. júní 2026
+  - generic [ref=e25]: Þessi síða safnar engum upplýsingum. Launin þín verða eftir í vafranum þínum — þar sem þau eiga heima.
