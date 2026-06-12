@@ -14,7 +14,8 @@ interface ChartProps {
   series: SeriesPoint[];
 }
 
-const MARGIN = { top: 18, right: 16, bottom: 30, left: 60 };
+const MARGIN = { top: 18, right: 16, bottom: 30 };
+const LABEL_CHAR_W = 6.8; // ≈ width of a tabular digit at 11.5px
 
 /** Round y-axis ticks to friendly values. */
 function niceTicks(min: number, max: number, count: number): number[] {
@@ -33,17 +34,35 @@ function niceTicks(min: number, max: number, count: number): number[] {
   return ticks;
 }
 
-/** Calendar-aligned x ticks: every 3/6/12/24 months depending on span. */
-function xTickIndices(series: SeriesPoint[]): { indices: number[]; step: number } {
+/**
+ * Calendar-aligned x ticks: the smallest of 3/6/12/24/48 months whose
+ * labels still fit the available pixel width.
+ */
+function xTickIndices(
+  series: SeriesPoint[],
+  innerW: number,
+): { indices: number[]; step: number } {
   const n = series.length;
-  const step = n <= 20 ? 3 : n <= 40 ? 6 : n <= 96 ? 12 : 24;
-  const indices = series
-    .map((p, i) => ({ i, m: Number(p.month.split("-")[1]), y: Number(p.month.split("-")[0]) }))
-    .filter(({ m, y }) =>
-      step < 12 ? (m - 1) % step === 0 : m === 1 && y % (step / 12) === 0,
-    )
-    .map(({ i }) => i);
-  return { indices, step };
+  const pick = (step: number) =>
+    series
+      .map((p, i) => ({
+        i,
+        m: Number(p.month.split("-")[1]),
+        y: Number(p.month.split("-")[0]),
+      }))
+      .filter(({ m, y }) =>
+        step < 12 ? (m - 1) % step === 0 : m === 1 && y % (step / 12) === 0,
+      )
+      .map(({ i }) => i);
+  for (const step of [3, 6, 12, 24, 48]) {
+    if (step < 3 * Math.ceil(n / 40)) continue; // keep at most ~13 candidates
+    const indices = pick(step);
+    const labelW = step >= 12 ? 42 : 64;
+    if (indices.length * labelW <= innerW || step === 48) {
+      return { indices, step };
+    }
+  }
+  return { indices: pick(48), step: 48 };
 }
 
 export function Chart({ series }: ChartProps) {
@@ -65,7 +84,6 @@ export function Chart({ series }: ChartProps) {
   if (series.length < 2) return null;
 
   const height = width < 480 ? 280 : 360;
-  const innerW = width - MARGIN.left - MARGIN.right;
   const innerH = height - MARGIN.top - MARGIN.bottom;
 
   const reals = series.map((p) => p.real);
@@ -73,7 +91,16 @@ export function Chart({ series }: ChartProps) {
   const yMin = Math.min(...reals) * 0.95;
   const yMax = Math.max(...nominals) * 1.03;
 
-  const x = (i: number) => MARGIN.left + (i / (series.length - 1)) * innerW;
+  const yTicks = niceTicks(yMin, yMax, 4);
+  const yStep = yTicks.length > 1 ? yTicks[1] - yTicks[0] : undefined;
+  const yLabel = (v: number) => formatCompactISK(v, yStep);
+
+  // Size the left margin to the widest tick label so nothing clips.
+  const maxLabelChars = Math.max(...yTicks.map((v) => yLabel(v).length));
+  const marginLeft = Math.max(44, Math.round(14 + maxLabelChars * LABEL_CHAR_W));
+  const innerW = width - marginLeft - MARGIN.right;
+
+  const x = (i: number) => marginLeft + (i / (series.length - 1)) * innerW;
   const y = (v: number) =>
     MARGIN.top + innerH - ((v - yMin) / (yMax - yMin)) * innerH;
 
@@ -101,8 +128,7 @@ export function Chart({ series }: ChartProps) {
   }
   bandPath += " Z";
 
-  const yTicks = niceTicks(yMin, yMax, 4);
-  const { indices: xIndices, step: xStep } = xTickIndices(series);
+  const { indices: xIndices, step: xStep } = xTickIndices(series, innerW);
 
   const raiseIndices = series
     .map((p, i) => ({ p, i }))
@@ -119,7 +145,7 @@ export function Chart({ series }: ChartProps) {
     const svg = e.currentTarget as SVGElement;
     const rect = svg.getBoundingClientRect();
     const px = ((e.clientX - rect.left) / rect.width) * width;
-    const frac = (px - MARGIN.left) / innerW;
+    const frac = (px - marginLeft) / innerW;
     return Math.max(0, Math.min(last, Math.round(frac * last)));
   };
 
@@ -180,14 +206,14 @@ export function Chart({ series }: ChartProps) {
           {yTicks.map((v) => (
             <g key={v}>
               <line
-                x1={MARGIN.left}
+                x1={marginLeft}
                 x2={width - MARGIN.right}
                 y1={y(v)}
                 y2={y(v)}
                 class="gridline"
               />
-              <text x={MARGIN.left - 8} y={y(v)} class="tick-label tick-y">
-                {formatCompactISK(v)}
+              <text x={marginLeft - 8} y={y(v)} class="tick-label tick-y">
+                {yLabel(v)}
               </text>
             </g>
           ))}

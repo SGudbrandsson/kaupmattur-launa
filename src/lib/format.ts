@@ -46,12 +46,11 @@ function group(n: number): string {
   return sign + String(abs).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
-/** One decimal with an Icelandic comma: 1.25 → "1,3". */
-function oneDecimal(n: number): string {
-  const rounded = Math.round(Math.abs(n) * 10) / 10;
+/** Fixed decimals with an Icelandic comma: (1.25, 1) → "1,3". */
+function fixedComma(n: number, decimals: number): string {
   const sign = n < 0 ? MINUS : "";
-  const [int, frac = "0"] = rounded.toFixed(1).split(".");
-  return `${sign}${group(Number(int))},${frac}`;
+  const [int, frac] = Math.abs(n).toFixed(decimals).split(".");
+  return `${sign}${group(Number(int))}${frac ? `,${frac}` : ""}`;
 }
 
 /** "1.000.000 kr." — whole kronur. */
@@ -86,17 +85,29 @@ export function formatDateLong(iso: string): string {
 
 /** −0.071 → "−7,1%". */
 export function formatPercent(ratio: number): string {
-  return `${oneDecimal(ratio * 100)}%`;
+  return `${fixedComma(ratio * 100, 1)}%`;
 }
 
-/** Compact axis labels: "950 kr.", "950 þús.", "1,2 m.kr." */
-export function formatCompactISK(amount: number): string {
+/**
+ * Compact axis labels: "950 kr.", "950 þús.", "1,2 m.kr."
+ * Pass the tick step so neighbouring ticks stay distinguishable
+ * (step 50.000 → "1,05 m.kr." instead of two ticks both saying "1,1").
+ */
+export function formatCompactISK(amount: number, step?: number): string {
   const abs = Math.abs(amount);
   if (abs >= 1_000_000) {
     const m = amount / 1_000_000;
-    const text =
-      Math.round(m * 10) % 10 === 0 ? group(Math.round(m)) : oneDecimal(m);
-    return `${text} m.kr.`;
+    const decimals =
+      step !== undefined
+        ? step % 1_000_000 === 0
+          ? 0
+          : step % 100_000 === 0
+            ? 1
+            : 2
+        : Math.round(m * 10) % 10 === 0
+          ? 0
+          : 1;
+    return `${fixedComma(m, decimals)} m.kr.`;
   }
   if (abs >= 1_000) {
     return `${group(Math.round(amount / 1_000))} þús.`;

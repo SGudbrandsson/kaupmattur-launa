@@ -52,6 +52,13 @@ describe("formatCompactISK", () => {
     expect(formatCompactISK(1_200_000)).toBe("1,2 m.kr.");
     expect(formatCompactISK(2_000_000)).toBe("2 m.kr.");
   });
+
+  it("keeps neighbouring ticks distinct given the tick step", () => {
+    expect(formatCompactISK(1_050_000, 50_000)).toBe("1,05 m.kr.");
+    expect(formatCompactISK(1_100_000, 50_000)).toBe("1,10 m.kr.");
+    expect(formatCompactISK(1_100_000, 100_000)).toBe("1,1 m.kr.");
+    expect(formatCompactISK(2_000_000, 1_000_000)).toBe("2 m.kr.");
+  });
 });
 
 describe("parseAmount", () => {
