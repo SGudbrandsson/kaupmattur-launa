@@ -1,0 +1,23 @@
+{
+  "name": "isk-value-web",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "update-data": "node scripts/update-data.mjs"
+  },
+  "dependencies": {
+    "preact": "^10.27.0"
+  },
+  "devDependencies": {
+    "@preact/preset-vite": "^2.10.0",
+    "typescript": "^5.7.0",
+    "vite": "^6.3.0",
+    "vitest": "^3.1.0"
+  }
+}
