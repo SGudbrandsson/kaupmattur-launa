@@ -7,6 +7,7 @@ import {
   analyzeRows,
   type DraftRow,
 } from "./components/SalaryForm";
+import { SummaryCards } from "./components/SummaryCards";
 import { getCpi } from "./lib/cpi";
 import { formatISK } from "./lib/format";
 import { loadEntries, saveEntries } from "./lib/storage";
@@ -95,7 +96,8 @@ export function App() {
           onRemoveRow={removeRow}
           onClearExample={clearExample}
         />
-        {/* Chart and summary cards land in the next steps. */}
+        {/* The chart lands in the next step. */}
+        <SummaryCards events={events} cpi={cpi} />
         <Methodology />
       </main>
     </>
