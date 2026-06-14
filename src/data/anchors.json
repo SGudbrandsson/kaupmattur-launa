@@ -1,0 +1,9 @@
+{
+  "source": "Áætluð landsmeðaltöl, sýnd sem \"um það bil\". Sjá README fyrir nánari skýringar.",
+  "referenceMonth": "2025-01",
+  "anchors": {
+    "rent_3room_capital": { "price": 280000, "unit": "month" },
+    "weekly_groceries_family4": { "price": 35000, "unit": "week" },
+    "trip_abroad_two": { "price": 250000, "unit": "trip" }
+  }
+}
