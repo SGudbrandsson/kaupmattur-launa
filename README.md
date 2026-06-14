@@ -83,8 +83,17 @@ gh workflow run "Update CPI data"
 Cloudflare Pages, or a plain web server. No environment variables, no build
 secrets.
 
-Optional automation: a monthly CI cron job that runs `npm run update-data`
-and opens a PR when a new month appears.
+This repo deploys to **GitHub Pages** automatically: `.github/workflows/deploy.yml`
+builds and publishes `dist/` on every push to `main` (including the monthly CPI
+update, so the live site refreshes itself). Live URL:
+<https://sgudbrandsson.github.io/kaupmattur-launa/>.
+
+To serve it from a custom domain, set it under **Settings → Pages → Custom
+domain** (or `gh api -X PUT repos/SGudbrandsson/kaupmattur-launa/pages -f cname=your.domain`)
+and point DNS at GitHub: a `CNAME` to `sgudbrandsson.github.io` for a subdomain,
+or the four GitHub Pages `A`/`AAAA` records for an apex domain. The relative
+`base: './'` means no rebuild is needed when moving from the project subpath to
+a root domain.
 
 ## Project documentation
 
