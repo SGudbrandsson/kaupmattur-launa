@@ -437,6 +437,7 @@ This project may have hooks that auto-format code after writes or validate opera
 |------|-----------------|---------------|-------|
 | 2026-06-12 | Project created | CLAUDE.md | Initial setup |
 | 2026-06-12 | Full v1 build: design doc, CPI data pipeline, inflation math + tests, Icelandic formatting, layout/design system, salary form + persistence, summary cards, interactive SVG chart, verification, README | whole repo | 26 unit tests passing; Playwright-verified: zero external requests, 928.686 kr anchor scenario, multi-raise step, persistence, example-not-persisted, 390×844 mobile |
+| 2026-06-14 | Expose dev/preview server on all hosts; push to private GitHub repo SGudbrandsson/kaupmattur-launa; add monthly GitHub Action to refresh CPI dataset | vite.config.ts, .github/workflows/update-data.yml, README.md | Action commits only on a new CPI month (ignores fetchedAt); manual dispatch run verified green |
 
 ---
 

@@ -65,6 +65,17 @@ derived from the dataset, so stale data is always visible.
 
 This is the only code in the repository that touches the network.
 
+### Automated monthly refresh
+
+`.github/workflows/update-data.yml` runs `update-data` on the 2nd of every
+month (and on demand from the Actions tab). It commits `src/data/cpi.json`
+**only** when a new month of data appears — the `fetchedAt` timestamp alone
+never triggers a commit. Trigger a run manually with:
+
+```bash
+gh workflow run "Update CPI data"
+```
+
 ## Deploying
 
 `npm run build` produces a self-contained `dist/` with relative asset paths
