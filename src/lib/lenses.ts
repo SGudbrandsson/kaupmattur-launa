@@ -26,8 +26,8 @@ export interface Gap {
 
 /** The today-króna shortfall for the most recent salary event, or null. */
 export function monthlyGap(events: SalaryEvent[], cpi: CpiData): Gap | null {
-  if (events.length === 0) return null;
-  const latest = [...events].sort((a, b) => compareMonths(a.month, b.month)).at(-1)!;
+  const latest = [...events].sort((a, b) => compareMonths(a.month, b.month)).at(-1);
+  if (!latest) return null;
   const gap = requiredToday(latest.amount, latest.month, cpi) - latest.amount;
   if (gap <= 0) return null;
   return { gap, current: latest.amount, month: latest.month };
