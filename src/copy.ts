@@ -11,8 +11,6 @@ export const copy = {
   },
 
   privacy: {
-    badge: "Gögnin þín fara aldrei úr vafranum",
-    detail: "Engar vafrakökur og engin persónugreinanleg gögn. Launin þín eru reiknuð í tækinu þínu og fara aldrei neitt — við teljum aðeins nafnlausar heimsóknir.",
     howTitle: "Hvernig get ég sannreynt það?",
     howBody:
       "Opnaðu þróunartól vafrans (F12 eða „Skoða“ → „Þróunartól“), veldu Network-flipann og endurhlaðdu síðunni. Það eina sem síðan sendir frá sér er nafnlaus heimsóknartalning (Umami, umami.snjall.is) — engar vafrakökur og engin persónugreinanleg gögn. Launin þín og útreikningarnir fara aldrei neitt, hvorki til okkar né annarra, og vísitölugögnin fylgja síðunni sjálfri.",

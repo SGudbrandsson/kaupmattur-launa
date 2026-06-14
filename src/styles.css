@@ -186,42 +186,14 @@ h2 {
   text-wrap: pretty;
 }
 
-/* ---------- Privacy badge ---------- */
+/* ---------- Verify expander (methodology) ---------- */
 
-.privacy {
-  margin-top: 2.25rem;
-}
-
-.privacy-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.625rem;
-  background: var(--moss-wash);
-  color: var(--moss);
-  border: 1px solid color-mix(in srgb, var(--moss) 22%, transparent);
-  border-radius: 999px;
-  padding: 0.5rem 1.125rem 0.5rem 0.875rem;
-  font-weight: 600;
-  font-size: 0.9375rem;
-  line-height: 1.35;
-}
-
-.privacy-pill svg {
-  flex: none;
-}
-
-.privacy-detail {
-  margin: 0.625rem 0 0;
-  font-size: 0.9375rem;
-  color: var(--ink-soft);
-}
-
-.privacy details {
+.verify {
   margin-top: 0.375rem;
   font-size: 0.9375rem;
 }
 
-.privacy summary {
+.verify summary {
   cursor: pointer;
   display: inline-block;
   color: var(--glacier-deep);
@@ -231,11 +203,11 @@ h2 {
   text-underline-offset: 3px;
 }
 
-.privacy summary::-webkit-details-marker {
+.verify summary::-webkit-details-marker {
   display: none;
 }
 
-.privacy details > p {
+.verify > p {
   margin: 0.625rem 0 0;
   color: var(--ink-soft);
   max-width: 36rem;
