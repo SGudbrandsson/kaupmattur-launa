@@ -12,10 +12,10 @@ export const copy = {
 
   privacy: {
     badge: "Gögnin þín fara aldrei úr vafranum",
-    detail: "Engin netumferð, engar vafrakökur, engin greining — allt er reiknað í tækinu þínu.",
+    detail: "Engar vafrakökur og engin persónugreinanleg gögn. Launin þín eru reiknuð í tækinu þínu og fara aldrei neitt — við teljum aðeins nafnlausar heimsóknir.",
     howTitle: "Hvernig get ég sannreynt það?",
     howBody:
-      "Opnaðu þróunartól vafrans (F12 eða „Skoða“ → „Þróunartól“), veldu Network-flipann og endurhlaðdu síðunni. Þú sérð að síðan sækir aðeins sínar eigin skrár — launin þín eru aldrei send neitt, hvorki til okkar né annarra. Vísitölugögnin fylgja síðunni sjálfri.",
+      "Opnaðu þróunartól vafrans (F12 eða „Skoða“ → „Þróunartól“), veldu Network-flipann og endurhlaðdu síðunni. Það eina sem síðan sendir frá sér er nafnlaus heimsóknartalning (Umami, umami.snjall.is) — engar vafrakökur og engin persónugreinanleg gögn. Launin þín og útreikningarnir fara aldrei neitt, hvorki til okkar né annarra, og vísitölugögnin fylgja síðunni sjálfri.",
   },
 
   form: {
@@ -72,7 +72,7 @@ export const copy = {
 
   footer: {
     privacyReminder:
-      "Þessi síða safnar engum upplýsingum. Launin þín verða eftir í vafranum þínum — þar sem þau eiga heima.",
-    noscript: "Þessi reiknivél þarf JavaScript — einmitt vegna þess að allt er reiknað í vafranum þínum og ekkert sent annað.",
+      "Þessi síða geymir engar persónuupplýsingar. Launin þín verða eftir í vafranum þínum — þar sem þau eiga heima. Við teljum aðeins nafnlausar heimsóknir.",
+    noscript: "Þessi reiknivél þarf JavaScript — einmitt vegna þess að allt er reiknað í vafranum þínum og launin þín eru aldrei send neitt.",
   },
 } as const;

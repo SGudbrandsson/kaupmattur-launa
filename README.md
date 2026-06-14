@@ -11,13 +11,16 @@ Icelandic consumer price index.
 The salary data never leaves the browser:
 
 - **No server.** The site is static files; entries live in `localStorage` only.
-- **No runtime network requests.** The CPI dataset is bundled into the page
-  at build time and the fonts are self-hosted. Open the devtools Network tab:
-  every request is same-origin.
-- **No cookies, no analytics.**
+- **The CPI dataset is bundled** into the page at build time and the fonts are
+  self-hosted, so the salary calculation makes no network requests at all.
+- **No cookies, no personal data.** The only thing the page sends is an
+  anonymous, cookieless visit count via [Umami](https://umami.is)
+  (`umami.snjall.is`), which honours Do Not Track. It never sees the salary
+  figures — those are computed and kept entirely in the browser.
 
 This isn't a policy — it's how the thing is built. (The Hagstofa API also
-sends no CORS headers, so runtime fetching is impossible by design.)
+sends no CORS headers, so runtime fetching of the salary calculation is
+impossible by design.)
 
 ## How the math works
 

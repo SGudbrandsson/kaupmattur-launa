@@ -11,7 +11,7 @@ Then update the Project Overview section below.
 
 ## Project Overview
 - **Project Name**: isk-value-web
-- **Description**: "Kaupmáttur launa" — a fully client-side static website showing how Icelandic salaries lose purchasing power to inflation. Users enter salary changes (month + ISK amount); the app charts the inflation-adjusted real value month by month using the Icelandic CPI (vísitala neysluverðs, Hagstofa Íslands table VIS01000). No server, no analytics, no runtime network requests — privacy is architecturally guaranteed.
+- **Description**: "Kaupmáttur launa" — a fully client-side static website showing how Icelandic salaries lose purchasing power to inflation. Users enter salary changes (month + ISK amount); the app charts the inflation-adjusted real value month by month using the Icelandic CPI (vísitala neysluverðs, Hagstofa Íslands table VIS01000). No server; the salary calculation runs entirely client-side with the CPI data bundled at build time. The only network call is an anonymous, cookieless Umami visit count (umami.snjall.is) that never sees the salary figures.
 - **Tech Stack**: Vite, Preact (TSX), TypeScript, Vitest, hand-rolled SVG chart. CPI dataset bundled at build time via `npm run update-data` (the Hagstofa API has no CORS headers, so runtime fetching is impossible by design).
 - **Design doc**: `docs/superpowers/specs/2026-06-12-isk-value-web-design.md`
 - **Last Updated**: 2026-06-12
@@ -439,6 +439,7 @@ This project may have hooks that auto-format code after writes or validate opera
 | 2026-06-12 | Full v1 build: design doc, CPI data pipeline, inflation math + tests, Icelandic formatting, layout/design system, salary form + persistence, summary cards, interactive SVG chart, verification, README | whole repo | 26 unit tests passing; Playwright-verified: zero external requests, 928.686 kr anchor scenario, multi-raise step, persistence, example-not-persisted, 390×844 mobile |
 | 2026-06-14 | Expose dev/preview server on all hosts; push to private GitHub repo SGudbrandsson/kaupmattur-launa; add monthly GitHub Action to refresh CPI dataset | vite.config.ts, .github/workflows/update-data.yml, README.md | Action commits only on a new CPI month (ignores fetchedAt); manual dispatch run verified green |
 | 2026-06-14 | Made repo public; added GitHub Pages deploy workflow; site live | .github/workflows/deploy.yml, README.md | Live at https://sgudbrandsson.github.io/kaupmattur-launa/ (HTTP 200 verified); deploys on every push to main, so monthly data update auto-redeploys |
+| 2026-06-14 | Added Umami analytics (cookieless, DNT-honoring); rewrote privacy copy to stay truthful | index.html, src/copy.ts, README.md, CLAUDE.md | Umami site d317b503…; updated badge/detail/verify-instructions/footer/meta + docs so "no analytics / no network" claims now accurately describe anonymous visit counting vs. salary data never leaving the device; 27 tests pass |
 
 ---
 

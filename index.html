@@ -6,7 +6,7 @@
     <title>Kaupmáttur launa — hvað eru launin þín raunverulega virði?</title>
     <meta
       name="description"
-      content="Sjáðu hvernig verðbólgan étur kaupmátt launanna þinna, mánuð fyrir mánuð. Allt reiknað í vafranum þínum — engin gögn send neitt."
+      content="Sjáðu hvernig verðbólgan étur kaupmátt launanna þinna, mánuð fyrir mánuð. Allt reiknað í vafranum þínum — launin þín eru aldrei send neitt."
     />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="is_IS" />
@@ -16,9 +16,20 @@
     />
     <meta
       property="og:description"
-      content="Sjáðu hvernig verðbólgan étur kaupmátt launanna þinna, mánuð fyrir mánuð. Allt reiknað í vafranum þínum — engin gögn send neitt."
+      content="Sjáðu hvernig verðbólgan étur kaupmátt launanna þinna, mánuð fyrir mánuð. Allt reiknað í vafranum þínum — launin þín eru aldrei send neitt."
     />
     <meta name="theme-color" content="#faf6ee" />
+    <!--
+      Anonymous, cookieless visit counting (Umami). It collects no personal
+      data and never sees the salary figures — those stay in the browser.
+      data-do-not-track makes it honour the browser's Do Not Track signal.
+    -->
+    <script
+      defer
+      src="https://umami.snjall.is/script.js"
+      data-website-id="d317b503-1a13-4edb-8532-30b361a63991"
+      data-do-not-track="true"
+    ></script>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link
       rel="preload"
@@ -38,7 +49,7 @@
   <body>
     <noscript>
       Þessi reiknivél þarf JavaScript — einmitt vegna þess að allt er reiknað í
-      vafranum þínum og ekkert sent annað.
+      vafranum þínum og launin þín eru aldrei send neitt.
     </noscript>
     <div id="app"></div>
     <script type="module" src="/src/main.tsx"></script>
