@@ -1,0 +1,50 @@
+name: Update CPI data
+
+# Refreshes src/data/cpi.json from the Hagstofa Íslands PX-Web API once a
+# month and commits the result if (and only if) a new month of data appeared.
+# Runs on the 2nd of each month — Icelandic CPI for the previous month is
+# published in the last week of the month, so by the 2nd it is always out.
+
+on:
+  schedule:
+    - cron: "0 6 2 * *" # 06:00 UTC on the 2nd of every month
+  workflow_dispatch: # allow manual runs from the Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Fetch latest CPI series
+        run: npm run update-data
+
+      - name: Commit if the dataset gained new data
+        run: |
+          # The script stamps a fresh `fetchedAt` on every run, so a plain
+          # diff is never empty. Only commit when a line *other than*
+          # fetchedAt changed (i.e. a new month or a revised value).
+          meaningful=$(git diff -- src/data/cpi.json \
+            | grep -E '^[+-]' \
+            | grep -vE '^(\+\+\+|---)' \
+            | grep -v '"fetchedAt"' || true)
+
+          if [ -z "$meaningful" ]; then
+            echo "No new CPI data since last run — nothing to commit."
+            git checkout -- src/data/cpi.json
+            exit 0
+          fi
+
+          last_month=$(node -e "process.stdout.write(require('./src/data/cpi.json').lastMonth)")
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/data/cpi.json
+          git commit -m "chore: update CPI dataset through ${last_month}"
+          git push
