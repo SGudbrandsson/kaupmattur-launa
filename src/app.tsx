@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "preact/hooks";
 import { Hero } from "./components/Hero";
-import { PrivacyBadge } from "./components/PrivacyBadge";
+import { PayoffCard } from "./components/PayoffCard";
 import { Methodology } from "./components/Methodology";
 import {
   SalaryForm,
@@ -88,7 +88,12 @@ export function App() {
       <div class="aurora" aria-hidden="true" />
       <main class="page">
         <Hero />
-        <PrivacyBadge />
+        <PayoffCard
+          events={events}
+          cpi={cpi}
+          isExample={state.isExample}
+          onTryOwn={clearExample}
+        />
         <SalaryForm
           rows={state.rows}
           errors={errors}

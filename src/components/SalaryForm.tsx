@@ -137,6 +137,7 @@ export function SalaryForm(props: SalaryFormProps) {
     <section class="salary rise rise-3" aria-labelledby="salary-title">
       <h2 id="salary-title">{f.title}</h2>
       <p class="section-intro">{f.intro}</p>
+      <p class="form-privacy">{copy.privacy.inline}</p>
       {props.isExample && (
         <div class="example-banner">
           <span class="example-tag">{f.exampleTag}</span>
