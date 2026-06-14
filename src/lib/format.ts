@@ -88,6 +88,11 @@ export function formatPercent(ratio: number): string {
   return `${fixedComma(ratio * 100, 1)}%`;
 }
 
+/** One-or-more decimal places with an Icelandic comma: (3.81, 1) → "3,8". */
+export function formatDecimal(n: number, decimals = 1): string {
+  return fixedComma(n, decimals);
+}
+
 /**
  * Compact axis labels: "950 kr.", "950 þús.", "1,2 m.kr."
  * Pass the tick step so neighbouring ticks stay distinguishable

@@ -15,7 +15,41 @@ export const copy = {
     detail: "Engar vafrakökur og engin persónugreinanleg gögn. Launin þín eru reiknuð í tækinu þínu og fara aldrei neitt — við teljum aðeins nafnlausar heimsóknir.",
     howTitle: "Hvernig get ég sannreynt það?",
     howBody:
-      "Opnaðu þróunartól vafrans (F12 eða „Skoða“ → „Þróunartól“), veldu Network-flipann og endurhlaðdu síðunni. Það eina sem síðan sendir frá sér er nafnlaus heimsóknartalning (Umami, umami.snjall.is) — engar vafrakökur og engin persónugreinanleg gögn. Launin þín og útreikningarnir fara aldrei neitt, hvorki til okkar né annarra, og vísitölugögnin fylgja síðunni sjálfri.",
+      "Opnaðu þróunartól vafrans (F12 eða „Skoða” → „Þróunartól”), veldu Network-flipann og endurhlaðdu síðunni. Það eina sem síðan sendir frá sér er nafnlaus heimsóknartalning (Umami, umami.snjall.is) — engar vafrakökur og engin persónugreinanleg gögn. Launin þín og útreikningarnir fara aldrei neitt, hvorki til okkar né annarra, og vísitölugögnin fylgja síðunni sjálfri.",
+    inline: "🔒 Reiknað í tækinu þínu — launin þín fara hvergi.",
+  },
+
+  payoff: {
+    // (amount) e.g. "88.000 kr." → headline
+    title: (amount: string) =>
+      `Verðbólgan tók ${amount} af laununum þínum á mánuði`,
+    // shown when the salary kept up / is too new
+    held: "Launin þín hafa haldið í við verðbólguna — eða eru of ný til að hún hafi bitið.",
+    cta: "Prófa með mínum launum",
+    pickLabel: "Berðu tapið saman við:",
+  },
+
+  lenses: {
+    chips: {
+      raise: "📈 Launahækkun",
+      rent: "🏠 Leiga",
+      food: "🛒 Matur",
+      life: "✈️ Lífsgæði",
+    },
+    basisExact: "nákvæmt",
+    basisApprox: "um það bil",
+    // pct e.g. "12,4%", days e.g. "2,5"
+    raise: (pct: string, days: string) =>
+      `Þú þyrftir ${pct} launahækkun bara til að standa í stað — eða að vinna ${days} daga til viðbótar í hverjum mánuði.`,
+    // pct e.g. "48%"
+    rent: (pct: string) =>
+      `Það er um ${pct} af mánaðarleigu á 3ja herbergja íbúð á höfuðborgarsvæðinu.`,
+    // weeks e.g. "3,8"
+    food: (weeks: string) =>
+      `Það jafngildir um ${weeks} vikum af mat fyrir fjögurra manna fjölskyldu á mánuði.`,
+    // annual e.g. "1.920.000 kr.", trips e.g. "6,4"
+    life: (annual: string, trips: string) =>
+      `Á ári eru þetta ${annual} — eins og ${trips} utanlandsferðir fyrir tvo (dæmi).`,
   },
 
   form: {
