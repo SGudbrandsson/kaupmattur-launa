@@ -22,6 +22,16 @@ This isn't a policy — it's how the thing is built. (The Hagstofa API also
 sends no CORS headers, so runtime fetching of the salary calculation is
 impossible by design.)
 
+## Tangible comparisons (price anchors)
+
+The payoff card can express the monthly purchasing-power loss as rent, food, or
+a yearly lifestyle figure. These use a small bundled basket, `src/data/anchors.json`:
+national-average reference prices at a reference month, **inflated to the latest
+CPI month at render time** so they never go stale. They are approximate by
+nature and always carry an "um það bil" badge in the UI. The "raise needed to
+stand still" lens is exact — it comes straight from the CPI. Update the anchor
+prices by editing `anchors.json` (and bump `referenceMonth` to match).
+
 ## How the math works
 
 We use the monthly consumer price index (vísitala neysluverðs, base
