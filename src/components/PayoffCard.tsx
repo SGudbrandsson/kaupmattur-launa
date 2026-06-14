@@ -18,8 +18,6 @@ interface PayoffCardProps {
   isExample?: boolean;
 }
 
-const ORDER: LensKey[] = ["raise", "rent", "food", "life"];
-
 function lensText(v: LensValue): string {
   const L = copy.lenses;
   switch (v.key) {
@@ -58,23 +56,30 @@ export function PayoffCard({ events, cpi, onTryOwn, isExample }: PayoffCardProps
         {copy.payoff.title(formatISK(gap.gap))}
       </h2>
 
-      <p class="payoff-pick">{copy.payoff.pickLabel}</p>
-      <div class="lens-chips" role="tablist" aria-label={copy.payoff.pickLabel}>
-        {ORDER.map((key) => (
+      <p id="lens-pick" class="payoff-pick">{copy.payoff.pickLabel}</p>
+      <div class="lens-chips" role="tablist" aria-labelledby="lens-pick">
+        {lenses.map((l) => (
           <button
-            key={key}
+            key={l.key}
             type="button"
             role="tab"
-            aria-selected={key === selected}
-            class={`lens-chip${key === selected ? " is-on" : ""}`}
-            onClick={() => setSelected(key)}
+            id={`lens-tab-${l.key}`}
+            aria-selected={l.key === selected}
+            aria-controls="lens-panel"
+            class={`lens-chip${l.key === selected ? " is-on" : ""}`}
+            onClick={() => setSelected(l.key)}
           >
-            {copy.lenses.chips[key]}
+            {copy.lenses.chips[l.key]}
           </button>
         ))}
       </div>
 
-      <div class="lens-result" role="tabpanel">
+      <div
+        id="lens-panel"
+        class="lens-result"
+        role="tabpanel"
+        aria-labelledby={`lens-tab-${active.key}`}
+      >
         <p class="lens-text">{lensText(active)}</p>
         <span class={`lens-basis is-${active.basis}`}>{basisLabel}</span>
       </div>
