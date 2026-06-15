@@ -3,6 +3,25 @@ import type { CpiData, MonthKey } from "../lib/cpi";
 import type { SalaryEvent } from "../lib/inflation";
 import { MONTHS_LONG, formatISK, parseAmount } from "../lib/format";
 
+function LockIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2.2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <rect x="4" y="11" width="16" height="10" rx="2.5" />
+      <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+    </svg>
+  );
+}
+
 /** A row as the user is editing it; month is always valid by construction. */
 export interface DraftRow {
   id: string;
@@ -137,7 +156,10 @@ export function SalaryForm(props: SalaryFormProps) {
     <section class="salary rise rise-3" aria-labelledby="salary-title">
       <h2 id="salary-title">{f.title}</h2>
       <p class="section-intro">{f.intro}</p>
-      <p class="form-privacy">{copy.privacy.inline}</p>
+      <p class="form-privacy">
+        <LockIcon />
+        {copy.privacy.inline}
+      </p>
       {props.isExample && (
         <div class="example-banner">
           <span class="example-tag">{f.exampleTag}</span>
