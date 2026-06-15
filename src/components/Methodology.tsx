@@ -13,6 +13,10 @@ export function Methodology() {
         <p>{m.p1}</p>
         <p>{m.p2}</p>
         <span class="formula">{m.formula}</span>
+        <details class="verify">
+          <summary>{copy.privacy.howTitle}</summary>
+          <p>{copy.privacy.howBody}</p>
+        </details>
         <div class="source">
           <span class="data-badge">{m.dataThrough(formatMonth(cpi.lastMonth))}</span>
           <br />
