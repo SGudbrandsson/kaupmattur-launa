@@ -156,7 +156,9 @@ export function SalaryForm(props: SalaryFormProps) {
       const availability = await modelAvailability();
       if (cancelled || availability === "unavailable") return;
       setAiReady(true);
-      setSpeechLangs(await speechLangsAvailable());
+      const langs = await speechLangsAvailable();
+      if (cancelled) return;
+      setSpeechLangs(langs);
     })();
     return () => {
       cancelled = true;
