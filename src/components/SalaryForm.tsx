@@ -70,7 +70,7 @@ interface MonthPickerProps {
   onChange: (month: MonthKey) => void;
 }
 
-function MonthPicker({ month, cpi, rowId, onChange }: MonthPickerProps) {
+export function MonthPicker({ month, cpi, rowId, onChange }: MonthPickerProps) {
   const [firstYear, firstMonth] = cpi.firstMonth.split("-").map(Number);
   const [lastYear, lastMonth] = cpi.lastMonth.split("-").map(Number);
   const [year, monthNum] = month.split("-").map(Number);
