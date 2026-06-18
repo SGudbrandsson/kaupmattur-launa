@@ -1,4 +1,4 @@
-import { useRef, useState } from "preact/hooks";
+import { useEffect, useRef, useState } from "preact/hooks";
 import { copy } from "../copy";
 import type { CpiData } from "../lib/cpi";
 import type { SalaryEvent } from "../lib/inflation";
@@ -66,6 +66,14 @@ export function AiAutofill({ cpi, onApply, speechLangs }: AiAutofillProps) {
   );
   const extractorRef = useRef<Extractor | null>(null);
   const dictationRef = useRef<Dictation | null>(null);
+
+  useEffect(
+    () => () => {
+      extractorRef.current?.destroy();
+      dictationRef.current?.stop();
+    },
+    [],
+  );
 
   function close() {
     extractorRef.current?.destroy();
@@ -191,11 +199,12 @@ export function AiAutofill({ cpi, onApply, speechLangs }: AiAutofillProps) {
 
       {(phase === "describe" || phase === "error") && (
         <>
-          <p class="ai-title">{c.describeTitle}</p>
+          <p id="ai-describe-title" class="ai-title">{c.describeTitle}</p>
           <div class="ai-ta-wrap">
             <textarea
               class="ai-ta"
               rows={3}
+              aria-labelledby="ai-describe-title"
               placeholder={c.placeholder}
               value={text}
               onInput={(e) => setText(e.currentTarget.value)}
