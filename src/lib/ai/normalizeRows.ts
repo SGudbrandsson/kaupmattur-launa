@@ -36,8 +36,8 @@ export function normalizeRows(raw: RawRow[], cpi: CpiData): NormalizeResult {
   let dropped = 0;
 
   for (const row of raw) {
-    const month = toMonthKey(row?.month);
-    const amount = Math.round(Number(row?.amount));
+    const month = toMonthKey(row.month);
+    const amount = Math.round(Number(row.amount));
     const inRange =
       month !== null &&
       compareMonths(month, cpi.firstMonth) >= 0 &&
