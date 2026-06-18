@@ -949,3 +949,269 @@ footer.colophon {
 .form-privacy svg {
   flex: none;
 }
+
+/* ---------- AI autofill ---------- */
+.ai-open {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 48px;
+  margin-bottom: 1.25rem;
+  font: inherit;
+  font-weight: 700;
+  color: var(--glacier-deep);
+  background: var(--glacier-wash);
+  border: 1.5px solid color-mix(in srgb, var(--glacier) 40%, transparent);
+  border-radius: var(--radius-m);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.ai-open:hover {
+  border-color: var(--glacier);
+}
+
+.ai-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+}
+
+.ai-title {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+
+.ai-ta-wrap {
+  position: relative;
+}
+.ai-ta {
+  width: 100%;
+  font: inherit;
+  font-size: 1rem;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-s);
+  padding: 0.625rem 3rem 0.625rem 0.75rem;
+  resize: vertical;
+}
+.ai-ta:focus-visible {
+  outline: 2px solid var(--glacier);
+  outline-offset: 1px;
+  border-color: var(--glacier);
+}
+.ai-mic {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  color: var(--glacier-deep);
+  background: var(--glacier-wash);
+  border: 1px solid color-mix(in srgb, var(--glacier) 30%, transparent);
+  border-radius: 50%;
+  cursor: pointer;
+}
+.ai-mic.is-live {
+  color: #fff;
+  background: var(--coral-deep);
+  border-color: var(--coral-deep);
+}
+
+.ai-lang {
+  display: flex;
+  gap: 0.375rem;
+}
+.ai-lang-opt {
+  min-height: 36px;
+  padding: 0.25rem 0.75rem;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.ai-lang-opt.is-on {
+  color: var(--paper-raised);
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+.ai-priv {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--ink-faint);
+}
+.ai-error {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--coral-deep);
+}
+
+.ai-download {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.9375rem;
+  color: var(--glacier-deep);
+}
+.ai-download-title {
+  margin: 0;
+  font-weight: 700;
+}
+.ai-download-hint {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--ink-faint);
+}
+.ai-bar {
+  height: 6px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--glacier) 20%, transparent);
+  overflow: hidden;
+}
+.ai-bar > i {
+  display: block;
+  height: 100%;
+  background: var(--glacier);
+  border-radius: 4px;
+  transition: width 0.2s ease;
+}
+
+.ai-rows {
+  display: grid;
+  gap: 0.75rem;
+}
+.ai-row {
+  position: relative;
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.875rem 2.5rem 0.875rem 0.875rem;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-s);
+}
+.ai-row-remove {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: var(--ink-faint);
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.ai-row-remove:hover {
+  background: var(--coral-wash);
+  color: var(--coral-deep);
+}
+
+.ai-dropped {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+.ai-replace {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--coral-deep);
+  background: var(--coral-wash);
+  border-radius: var(--radius-s);
+  padding: 0.5rem 0.75rem;
+}
+
+.ai-refine {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  border-top: 1px dashed var(--line-soft);
+  padding-top: 0.75rem;
+}
+.ai-refine-input {
+  flex: 1;
+  font: inherit;
+  font-size: 0.9375rem;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.5rem 0.875rem;
+}
+.ai-refine-input:focus-visible {
+  outline: 2px solid var(--glacier);
+  outline-offset: 1px;
+}
+.ai-refine-send {
+  width: 40px;
+  height: 40px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: var(--glacier);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.ai-acts {
+  display: flex;
+  gap: 0.625rem;
+  align-items: center;
+}
+.ai-primary {
+  min-height: 44px;
+  padding: 0.5rem 1.25rem;
+  font: inherit;
+  font-weight: 700;
+  color: #fff;
+  background: var(--glacier);
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.ai-primary:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.ai-ghost {
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+  font: inherit;
+  font-weight: 600;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.ai-open:focus-visible,
+.ai-mic:focus-visible,
+.ai-primary:focus-visible,
+.ai-ghost:focus-visible,
+.ai-refine-send:focus-visible,
+.ai-lang-opt:focus-visible,
+.ai-row-remove:focus-visible {
+  outline: 2px solid var(--glacier);
+  outline-offset: 2px;
+}
