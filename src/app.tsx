@@ -10,7 +10,7 @@ import {
 import { SummaryCards } from "./components/SummaryCards";
 import { Chart } from "./components/Chart";
 import { getCpi } from "./lib/cpi";
-import { buildSeries } from "./lib/inflation";
+import { buildSeries, type SalaryEvent } from "./lib/inflation";
 import { formatISK } from "./lib/format";
 import { loadEntries, saveEntries } from "./lib/storage";
 
@@ -83,6 +83,19 @@ export function App() {
       rows: [{ id: uid(), month: cpi.lastMonth, amountText: "" }],
     });
 
+  const replaceRows = (events: SalaryEvent[]) =>
+    setState({
+      isExample: false,
+      rows:
+        events.length > 0
+          ? events.map((e) => ({
+              id: uid(),
+              month: e.month,
+              amountText: formatISK(e.amount).replace(" kr.", ""),
+            }))
+          : [{ id: uid(), month: cpi.lastMonth, amountText: "" }],
+    });
+
   return (
     <>
       <div class="aurora" aria-hidden="true" />
@@ -103,6 +116,7 @@ export function App() {
           onAddRow={addRow}
           onRemoveRow={removeRow}
           onClearExample={clearExample}
+          onAiApply={replaceRows}
         />
         <Chart series={series} />
         <SummaryCards events={events} cpi={cpi} />
