@@ -64,7 +64,6 @@ export const copy = {
     langLabel: "Tungumál talgreiningar",
     downloadTitle: "Sæki AI-líkan…",
     downloadBody: "Þarf að sækja AI líkanið (~nokkur GB). Geymist svo í tækinu.",
-    downloadHint: "Má loka og halda áfram síðar.",
     previewTitle: "AI las úr textanum:",
     replaceNote: "Þetta kemur í stað núverandi færslna í töflunni.",
     dropped: (n: number) =>

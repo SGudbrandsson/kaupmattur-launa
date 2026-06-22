@@ -193,7 +193,6 @@ export function AiAutofill({ cpi, onApply, speechLangs }: AiAutofillProps) {
           <div class="ai-bar">
             <i style={{ width: `${Math.round(progress * 100)}%` }} />
           </div>
-          <p class="ai-download-hint">{c.downloadHint}</p>
         </div>
       )}
 
