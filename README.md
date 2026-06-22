@@ -32,6 +32,17 @@ nature and always carry an "um það bil" badge in the UI. The "raise needed to
 stand still" lens is exact — it comes straight from the CPI. Update the anchor
 prices by editing `anchors.json` (and bump `referenceMonth` to match).
 
+## Optional on-device AI autofill
+
+When the browser exposes Chrome's on-device **Prompt API** (Gemini Nano) — and,
+for voice, on-device Web Speech — a "Fylla út með AI" button appears on the form.
+Users can describe their salary history in plain Icelandic or English (typed or
+spoken) and the model parses it into editable rows. **Everything runs locally**:
+the model and speech recognition never send the salary text or audio anywhere, so
+the no-network promise is preserved. The feature is a progressive enhancement —
+if the APIs aren't present (the common case today), nothing renders and the form
+behaves exactly as before. Code: `src/lib/ai/` and `src/components/AiAutofill.tsx`.
+
 ## How the math works
 
 We use the monthly consumer price index (vísitala neysluverðs, base

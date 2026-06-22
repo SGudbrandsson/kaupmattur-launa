@@ -50,6 +50,35 @@ export const copy = {
       `Á ári eru þetta ${annual} — eins og ${trips} utanlandsferðir fyrir tvo (dæmi).`,
   },
 
+
+  ai: {
+    button: "Fylla út með AI",
+    describeTitle: "Lýstu launasögunni þinni",
+    placeholder:
+      "t.d. Byrjaði á 650þ í jan 2020, hækkaði í 720þ 2022, og er á 800þ í dag. (íslensku eða ensku)",
+    privacy: "Allt keyrt í tækinu þínu — ekkert sent neitt.",
+    analyze: "Greina",
+    cancel: "Hætta við",
+    micStart: "Tala inn",
+    micStop: "Stöðva upptöku",
+    langLabel: "Tungumál talgreiningar",
+    downloadTitle: "Sæki AI-líkan…",
+    downloadBody: "Þarf að sækja AI líkanið (~nokkur GB). Geymist svo í tækinu.",
+    downloadHint: "Má loka og halda áfram síðar.",
+    previewTitle: "AI las úr textanum:",
+    replaceNote: "Þetta kemur í stað núverandi færslna í töflunni.",
+    dropped: (n: number) =>
+      n === 1
+        ? "Einni færslu var sleppt (utan gildissviðs)."
+        : `${n} færslum var sleppt (utan gildissviðs).`,
+    refinePlaceholder: "Lagfæra… t.d. „hækkunin 2022 var 730þ“",
+    refineSend: "Senda lagfæringu",
+    apply: "Setja í töfluna",
+    errorNoParse:
+      "Náði ekki að lesa úr textanum — prófaðu að orða það öðruvísi eða sláðu inn handvirkt.",
+    errorGeneric: "Eitthvað fór úrskeiðis. Þú getur slegið inn handvirkt.",
+  },
+
   form: {
     title: "Launin þín",
     intro: "Skráðu launin þín og hvenær þau voru sett — og bættu við hækkunum eftir því sem þær komu.",

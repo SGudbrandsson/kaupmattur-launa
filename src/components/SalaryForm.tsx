@@ -1,7 +1,11 @@
+import { useEffect, useState } from "preact/hooks";
 import { copy } from "../copy";
 import type { CpiData, MonthKey } from "../lib/cpi";
 import type { SalaryEvent } from "../lib/inflation";
 import { MONTHS_LONG, formatISK, parseAmount } from "../lib/format";
+import { AiAutofill } from "./AiAutofill";
+import { modelAvailability } from "../lib/ai/localModel";
+import { speechLangsAvailable, type SpeechLang } from "../lib/ai/speech";
 
 function LockIcon() {
   return (
@@ -70,7 +74,7 @@ interface MonthPickerProps {
   onChange: (month: MonthKey) => void;
 }
 
-function MonthPicker({ month, cpi, rowId, onChange }: MonthPickerProps) {
+export function MonthPicker({ month, cpi, rowId, onChange }: MonthPickerProps) {
   const [firstYear, firstMonth] = cpi.firstMonth.split("-").map(Number);
   const [lastYear, lastMonth] = cpi.lastMonth.split("-").map(Number);
   const [year, monthNum] = month.split("-").map(Number);
@@ -137,10 +141,29 @@ interface SalaryFormProps {
   onAddRow: () => void;
   onRemoveRow: (id: string) => void;
   onClearExample: () => void;
+  onAiApply: (events: SalaryEvent[]) => void;
 }
 
 export function SalaryForm(props: SalaryFormProps) {
   const f = copy.form;
+
+  const [aiReady, setAiReady] = useState(false);
+  const [speechLangs, setSpeechLangs] = useState<SpeechLang[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      const availability = await modelAvailability();
+      if (cancelled || availability === "unavailable") return;
+      setAiReady(true);
+      const langs = await speechLangsAvailable();
+      if (cancelled) return;
+      setSpeechLangs(langs);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleAmountBlur = (row: DraftRow, text: string) => {
     const amount = parseAmount(text);
@@ -160,6 +183,13 @@ export function SalaryForm(props: SalaryFormProps) {
         <LockIcon />
         {copy.privacy.inline}
       </p>
+      {aiReady && (
+        <AiAutofill
+          cpi={props.cpi}
+          onApply={props.onAiApply}
+          speechLangs={speechLangs}
+        />
+      )}
       {props.isExample && (
         <div class="example-banner">
           <span class="example-tag">{f.exampleTag}</span>
