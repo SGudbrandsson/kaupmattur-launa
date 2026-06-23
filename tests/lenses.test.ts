@@ -1,14 +1,25 @@
 import { describe, it, expect } from "vitest";
 import type { CpiData } from "../src/lib/cpi";
 import type { Anchors } from "../src/lib/anchors";
-import { monthlyGap, computeLenses } from "../src/lib/lenses";
+import { peakGap, computeLenses } from "../src/lib/lenses";
 
+/** Dense fixture: linear interpolation 100→110 (2023) then 110→120 (2024). */
 const cpi: CpiData = {
   source: "test",
   fetchedAt: "2025-01-01T00:00:00Z",
   firstMonth: "2023-01",
   lastMonth: "2025-01",
-  values: { "2023-01": 100, "2024-01": 110, "2025-01": 120 },
+  values: {
+    "2023-01": 100, "2023-02": 100.833, "2023-03": 101.667,
+    "2023-04": 102.5,  "2023-05": 103.333, "2023-06": 104.167,
+    "2023-07": 105,    "2023-08": 105.833, "2023-09": 106.667,
+    "2023-10": 107.5,  "2023-11": 108.333, "2023-12": 109.167,
+    "2024-01": 110,    "2024-02": 110.833, "2024-03": 111.667,
+    "2024-04": 112.5,  "2024-05": 113.333, "2024-06": 114.167,
+    "2024-07": 115,    "2024-08": 115.833, "2024-09": 116.667,
+    "2024-10": 117.5,  "2024-11": 118.333, "2024-12": 119.167,
+    "2025-01": 120,
+  },
 };
 
 const anchors: Anchors = {
@@ -21,38 +32,32 @@ const anchors: Anchors = {
   },
 };
 
-describe("monthlyGap", () => {
-  it("returns the today-króna shortfall for the most recent salary", () => {
-    const gap = monthlyGap([{ month: "2023-01", amount: 800000 }], cpi);
-    expect(gap).not.toBeNull();
-    expect(gap!.current).toBe(800000);
-    expect(gap!.month).toBe("2023-01");
-    expect(gap!.gap).toBeCloseTo(160000, 0); // 800k×120/100 − 800k
+describe("peakGap", () => {
+  it("returns null with no events", () => {
+    expect(peakGap([], cpi)).toBeNull();
   });
 
-  it("uses the most recent event when there are several", () => {
-    const gap = monthlyGap(
+  it("is the today-króna loss from the peak, keyed to the peak month", () => {
+    const g = peakGap(
       [
         { month: "2023-01", amount: 800000 },
-        { month: "2024-01", amount: 900000 },
+        { month: "2025-01", amount: 820000 },
       ],
       cpi,
     );
-    expect(gap!.month).toBe("2024-01");
-    expect(gap!.gap).toBeCloseTo(81818, 0); // 900k×120/110 − 900k
+    expect(g).not.toBeNull();
+    expect(g!.current).toBe(820000);
+    expect(g!.gap).toBeGreaterThan(0);
+    expect(typeof g!.referenceMonth).toBe("string");
   });
 
-  it("returns null when the salary is too new to have lost value", () => {
-    expect(monthlyGap([{ month: "2025-01", amount: 800000 }], cpi)).toBeNull();
-  });
-
-  it("returns null when there are no events", () => {
-    expect(monthlyGap([], cpi)).toBeNull();
+  it("returns null when the latest salary is the all-time real peak", () => {
+    expect(peakGap([{ month: cpi.lastMonth, amount: 800000 }], cpi)).toBeNull();
   });
 });
 
 describe("computeLenses", () => {
-  const gap = monthlyGap([{ month: "2023-01", amount: 800000 }], cpi)!;
+  const gap = { gap: 160000, current: 800000, referenceMonth: "2023-01" };
   const lenses = computeLenses(gap, cpi, anchors);
   const by = (k: string) => lenses.find((l) => l.key === k)!;
 

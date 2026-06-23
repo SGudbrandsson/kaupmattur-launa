@@ -1,7 +1,6 @@
 import type { CpiData, MonthKey } from "./cpi";
-import { compareMonths } from "./cpi";
 import type { SalaryEvent } from "./inflation";
-import { requiredToday } from "./inflation";
+import { analyzePurchasingPower } from "./inflation";
 import { type Anchors, anchorToday } from "./anchors";
 
 const WORKDAYS_PER_MONTH = 21.67;
@@ -16,21 +15,19 @@ export type LensValue =
   | { key: "life"; basis: "approx"; annualLoss: number; trips: number };
 
 export interface Gap {
-  /** Monthly purchasing-power shortfall in today's króna (> 0). */
+  /** Monthly purchasing-power shortfall from the peak, in today's króna (> 0). */
   gap: number;
-  /** The current (most recent) nominal salary. */
+  /** The current (most recent) salary. */
   current: number;
-  /** The month the current salary was set. */
-  month: MonthKey;
+  /** The month of peak real purchasing power. */
+  referenceMonth: MonthKey;
 }
 
-/** The today-króna shortfall for the most recent salary event, or null. */
-export function monthlyGap(events: SalaryEvent[], cpi: CpiData): Gap | null {
-  const latest = [...events].sort((a, b) => compareMonths(a.month, b.month)).at(-1);
-  if (!latest) return null;
-  const gap = requiredToday(latest.amount, latest.month, cpi) - latest.amount;
-  if (gap <= 0) return null;
-  return { gap, current: latest.amount, month: latest.month };
+/** The today-króna loss from peak real purchasing power, or null at the peak. */
+export function peakGap(events: SalaryEvent[], cpi: CpiData): Gap | null {
+  const pp = analyzePurchasingPower(events, cpi);
+  if (!pp || pp.atPeak || pp.monthlyLoss <= 0) return null;
+  return { gap: pp.monthlyLoss, current: pp.nowValue, referenceMonth: pp.peakMonth };
 }
 
 /** Structured values for each lens, in display order. */
