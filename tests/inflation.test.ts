@@ -6,6 +6,7 @@ import {
   realValue,
   requiredToday,
 } from "../src/lib/inflation";
+import { analyzePurchasingPower } from "../src/lib/inflation";
 
 /** Hand-computable fixture: prices double over four months. */
 const synthetic: CpiData = {
@@ -136,5 +137,90 @@ describe("buildSeries", () => {
     );
     expect(series[0]).toMatchObject({ month: "2025-02", nominal: 1000 });
     expect(series.at(-1)!).toMatchObject({ month: "2025-05", nominal: 2000 });
+  });
+});
+
+describe("analyzePurchasingPower", () => {
+  it("returns null with no events", () => {
+    expect(analyzePurchasingPower([], synthetic)).toBeNull();
+  });
+
+  it("finds the peak, loss, and percentages (rising salary outrun by inflation)", () => {
+    const pp = analyzePurchasingPower(
+      [
+        { month: "2025-01", amount: 1000 },
+        { month: "2025-04", amount: 2000 },
+      ],
+      synthetic,
+    )!;
+    expect(pp.peakMonth).toBe("2025-04");
+    expect(pp.peakValueToday).toBeCloseTo(2500, 6);
+    expect(pp.nowValue).toBe(2000);
+    expect(pp.monthlyLoss).toBeCloseTo(500, 6);
+    expect(pp.declinePct).toBeCloseTo(0.2, 6);
+    expect(pp.raiseToReturn).toBeCloseTo(0.25, 6);
+    expect(pp.atPeak).toBe(false);
+    expect(pp.firstMonth).toBe("2025-01");
+  });
+
+  it("peaks at a NON-event month under deflation", () => {
+    const deflation: CpiData = {
+      source: "t", fetchedAt: "x", firstMonth: "2025-01", lastMonth: "2025-03",
+      values: { "2025-01": 100, "2025-02": 90, "2025-03": 95 },
+    };
+    const pp = analyzePurchasingPower([{ month: "2025-01", amount: 1000 }], deflation)!;
+    expect(pp.peakMonth).toBe("2025-02");
+    expect(pp.peakValueToday).toBeCloseTo((1000 * 95) / 90, 6);
+    expect(pp.atPeak).toBe(false);
+  });
+
+  it("rising nominal does NOT imply at-peak", () => {
+    const pp = analyzePurchasingPower(
+      [{ month: "2025-01", amount: 1000 }, { month: "2025-04", amount: 2000 }],
+      synthetic,
+    )!;
+    expect(pp.atPeak).toBe(false);
+    expect(pp.monthlyLoss).toBeGreaterThan(0);
+  });
+
+  it("reports at-peak when the salary was set in the last month", () => {
+    const pp = analyzePurchasingPower([{ month: "2025-05", amount: 900 }], synthetic)!;
+    expect(pp.peakMonth).toBe("2025-05");
+    expect(pp.monthlyLoss).toBe(0);
+    expect(pp.atPeak).toBe(true);
+    expect(pp.declinePct).toBe(0);
+    expect(pp.raiseToReturn).toBe(0);
+  });
+
+  it("a salary cut after the peak does not move the peak", () => {
+    const pp = analyzePurchasingPower(
+      [{ month: "2025-01", amount: 2000 }, { month: "2025-04", amount: 1500 }],
+      synthetic,
+    )!;
+    expect(pp.peakMonth).toBe("2025-01");
+    expect(pp.peakValueToday).toBeCloseTo(4000, 6);
+    expect(pp.nowValue).toBe(1500);
+    expect(pp.monthlyLoss).toBeCloseTo(2500, 6);
+  });
+
+  it("lifetimePct is negative when real value fell since the first salary", () => {
+    const pp = analyzePurchasingPower(
+      [{ month: "2025-01", amount: 2000 }, { month: "2025-04", amount: 1500 }],
+      synthetic,
+    )!;
+    expect(pp.lifetimePct).toBeCloseTo(-0.625, 6);
+  });
+
+  it("clamps sub-króna residuals to at-peak", () => {
+    const flat: CpiData = {
+      source: "t", fetchedAt: "x", firstMonth: "2025-01", lastMonth: "2025-02",
+      values: { "2025-01": 100, "2025-02": 100 },
+    };
+    const pp = analyzePurchasingPower(
+      [{ month: "2025-01", amount: 1000 }, { month: "2025-02", amount: 999.5 }],
+      flat,
+    )!;
+    expect(pp.monthlyLoss).toBe(0);
+    expect(pp.atPeak).toBe(true);
   });
 });
