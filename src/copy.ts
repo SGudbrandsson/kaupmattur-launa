@@ -18,11 +18,15 @@ export const copy = {
   },
 
   payoff: {
-    // (amount) e.g. "88.000 kr." → headline
-    title: (amount: string) =>
-      `Verðbólgan tók ${amount} af laununum þínum á mánuði`,
-    // shown when the salary kept up / is too new
-    held: "Launin þín hafa haldið í við verðbólguna — eða eru of ný til að hún hafi bitið.",
+    // (declinePct, monthlyLoss, peakMonth)
+    peakTitle: (declinePct: string, loss: string, peakMonth: string) =>
+      `Kaupmáttur þinn náði hámarki í ${peakMonth}. Síðan hefur hann rýrnað um ${declinePct} — eða ${loss} á mánuði.`,
+    // (verb, pct, firstMonth)
+    lifetime: (verb: string, pct: string, firstMonth: string) =>
+      `Frá ${firstMonth} hefur kaupmátturinn samt ${verb} um ${pct}.`,
+    verbUp: "aukist",
+    verbDown: "rýrnað",
+    atPeak: "Kaupmáttur þinn hefur aldrei verið hærri.",
     cta: "Prófa með mínum launum",
     pickLabel: "Berðu tapið saman við:",
   },
@@ -38,7 +42,7 @@ export const copy = {
     basisApprox: "um það bil",
     // pct e.g. "12,4%", days e.g. "2,5"
     raise: (pct: string, days: string) =>
-      `Þú þyrftir ${pct} launahækkun bara til að standa í stað — eða að vinna ${days} daga til viðbótar í hverjum mánuði.`,
+      `Þú þyrftir ${pct} launahækkun til að ná fyrri kaupmætti — eða að vinna ${days} daga til viðbótar í hverjum mánuði.`,
     // pct e.g. "48%"
     rent: (pct: string) =>
       `Það er um ${pct} af mánaðarleigu á 3ja herbergja íbúð á höfuðborgarsvæðinu.`,
@@ -108,6 +112,11 @@ export const copy = {
     raiseMarker: "Launabreyting",
     anchorNote: (month: string) =>
       `Raunvirðið er sýnt á verðlagi ${month}, þegar fyrstu launin voru sett — þannig sést hvort hækkanir halda í raun og veru í við verðbólguna.`,
+    frameToday: "Á verðlagi í dag",
+    frameOrigin: "Á verðlagi þá",
+    frameKeepPace: "Hélt í við verðbólgu?",
+    peakLabel: (month: string) => `hámark · ${month}`,
+    framePickLabel: "Sýn:",
   },
 
   summary: {
