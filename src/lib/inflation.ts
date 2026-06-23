@@ -70,15 +70,19 @@ export interface PurchasingPower {
   peakMonth: MonthKey;
   /** That peak expressed in today's krónur. */
   peakValueToday: number;
-  /** Current salary (already in today's krónur). */
+  /** The current (most recent) nominal salary; equals its own today-króna value. */
   nowValue: number;
   /** peakValueToday − nowValue, clamped to 0 within an epsilon. */
   monthlyLoss: number;
+  /** monthlyLoss / peakValueToday (0 at peak). */
   declinePct: number;
+  /** Raise fraction needed to return to peak = monthlyLoss / nowValue (0 at peak). */
   raiseToReturn: number;
   /** Real change since the first salary (may be negative). */
   lifetimePct: number;
+  /** The first salary event's month. */
   firstMonth: MonthKey;
+  /** True when the current month is the all-time real peak. */
   atPeak: boolean;
 }
 
@@ -90,6 +94,7 @@ const PEAK_EPSILON = 1;
  * global argmax of salary(t)/CPI(t) over EVERY month (not just event months) —
  * the Icelandic CPI has deflationary dips, so a plateau's peak can be a
  * non-event month. Ties resolve to the most recent month.
+ * Events must be within the CPI range.
  */
 export function analyzePurchasingPower(
   events: SalaryEvent[],

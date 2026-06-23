@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { getCpi, type CpiData } from "../src/lib/cpi";
 import {
+  analyzePurchasingPower,
   buildSeries,
   cumulativeInflation,
   realValue,
   requiredToday,
 } from "../src/lib/inflation";
-import { analyzePurchasingPower } from "../src/lib/inflation";
 
 /** Hand-computable fixture: prices double over four months. */
 const synthetic: CpiData = {
