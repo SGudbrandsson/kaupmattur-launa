@@ -1,15 +1,20 @@
 import { useState } from "preact/hooks";
 import { copy } from "../copy";
 import type { CpiData } from "../lib/cpi";
-import type { SalaryEvent } from "../lib/inflation";
+import { type SalaryEvent, analyzePurchasingPower } from "../lib/inflation";
 import { getAnchors } from "../lib/anchors";
 import {
   type LensKey,
   type LensValue,
   computeLenses,
-  monthlyGap,
+  peakGap,
 } from "../lib/lenses";
-import { formatDecimal, formatISK, formatPercent } from "../lib/format";
+import {
+  formatDecimal,
+  formatISK,
+  formatMonth,
+  formatPercent,
+} from "../lib/format";
 
 interface PayoffCardProps {
   events: SalaryEvent[];
@@ -86,34 +91,43 @@ function lensText(v: LensValue): string {
 
 export function PayoffCard({ events, cpi, onTryOwn, isExample }: PayoffCardProps) {
   const [selected, setSelected] = useState<LensKey>("raise");
-  const gap = monthlyGap(events, cpi);
+  const pp = analyzePurchasingPower(events, cpi);
+  if (!pp) return null;
 
-  if (!gap) {
-    if (events.length === 0) return null;
+  const lifetimeLine = copy.payoff.lifetime(
+    pp.lifetimePct >= 0 ? copy.payoff.verbUp : copy.payoff.verbDown,
+    formatPercent(Math.abs(pp.lifetimePct)),
+    formatMonth(pp.firstMonth),
+  );
+
+  if (pp.atPeak) {
     return (
       <section class="payoff card rise rise-2">
-        <p class="payoff-held">{copy.payoff.held}</p>
+        <p class="payoff-held">{copy.payoff.atPeak}</p>
+        <p class="payoff-secondary">{lifetimeLine}</p>
       </section>
     );
   }
 
-  const lenses = computeLenses(gap, cpi, getAnchors());
+  const gap = peakGap(events, cpi);
+  const lenses = gap ? computeLenses(gap, cpi, getAnchors()) : [];
   const active = lenses.find((l) => l.key === selected) ?? lenses[0];
   const basisLabel =
     active.basis === "exact" ? copy.lenses.basisExact : copy.lenses.basisApprox;
 
-  // Render the loss amount in coral (the system colour for lost value) by
-  // splitting the title template around the formatted figure.
-  const amount = formatISK(gap.gap);
-  const [before, after] = copy.payoff.title(amount).split(amount);
+  const lossStr = formatISK(pp.monthlyLoss);
+  const [before, after] = copy.payoff
+    .peakTitle(formatPercent(pp.declinePct), lossStr, formatMonth(pp.peakMonth))
+    .split(lossStr);
 
   return (
     <section class="payoff card rise rise-2" aria-labelledby="payoff-title">
       <h2 id="payoff-title" class="payoff-title">
         {before}
-        <span class="payoff-amount numeric">{amount}</span>
+        <span class="payoff-amount numeric">{lossStr}</span>
         {after}
       </h2>
+      <p class="payoff-secondary">{lifetimeLine}</p>
 
       <p id="lens-pick" class="payoff-pick">{copy.payoff.pickLabel}</p>
       <div class="lens-chips" role="group" aria-labelledby="lens-pick">

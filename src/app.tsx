@@ -10,7 +10,7 @@ import {
 import { SummaryCards } from "./components/SummaryCards";
 import { Chart } from "./components/Chart";
 import { getCpi } from "./lib/cpi";
-import { buildSeries, type SalaryEvent } from "./lib/inflation";
+import { type SalaryEvent } from "./lib/inflation";
 import { formatISK } from "./lib/format";
 import { loadEntries, saveEntries } from "./lib/storage";
 
@@ -49,7 +49,6 @@ export function App() {
   const [state, setState] = useState<FormState>(initialState);
 
   const { events, errors } = useMemo(() => analyzeRows(state.rows), [state.rows]);
-  const series = useMemo(() => buildSeries(events, cpi), [events, cpi]);
 
   // Example data is never persisted; user data always is.
   useEffect(() => {
@@ -118,7 +117,7 @@ export function App() {
           onClearExample={clearExample}
           onAiApply={replaceRows}
         />
-        <Chart series={series} />
+        <Chart events={events} cpi={cpi} />
         <SummaryCards events={events} cpi={cpi} />
         <Methodology />
       </main>

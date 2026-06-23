@@ -59,6 +59,12 @@ line resets to the new nominal at each raise and decays against that raise's
 own CPI baseline. The core math lives in `src/lib/inflation.ts` and is
 unit-tested against real CPI values.
 
+The page leads with **decline from peak**: real purchasing power is `salary ÷ CPI`,
+its peak is the highest point over *all* months (Icelandic CPI has deflationary
+dips, so the peak can fall between raises), and the headline shows how far today
+sits below that peak — with lifetime change as secondary context. The chart offers
+three reference frames (today's krónur / first-month krónur / keep-pace baseline).
+
 ## Development
 
 ```bash
