@@ -112,6 +112,14 @@ export const copy = {
     raiseMarker: "Launabreyting",
     anchorNote: (month: string) =>
       `Raunvirðið er sýnt á verðlagi ${month}, þegar fyrstu launin voru sett — þannig sést hvort hækkanir halda í raun og veru í við verðbólguna.`,
+    compareToday: "Virði í dag",
+    compareOrigin: "Raunvirði (á verðlagi þá)",
+    compareKeepPace: "Til að halda kaupmætti",
+    tooltipGain: "Umfram",
+    noteToday:
+      "Græna línan sýnir hvað eldri laun væru virði í dag — hæsti punktur er kaupmáttar-hámarkið þitt.",
+    noteKeepPace: (month: string) =>
+      `Græna línan sýnir launin sem þyrfti hverju sinni til að halda kaupmætti frá ${month}.`,
     frameToday: "Á verðlagi í dag",
     frameOrigin: "Á verðlagi þá",
     frameKeepPace: "Hélt í við verðbólgu?",

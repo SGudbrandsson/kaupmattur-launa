@@ -180,6 +180,14 @@ export function Chart({ events, cpi }: ChartProps) {
         : active.comparison / active.nominal - 1;
   const deltaClass = delta < 0 ? "readout-loss" : "readout-gain";
 
+  const compareLabel =
+    frame === "today"
+      ? c.compareToday
+      : frame === "keepPace"
+        ? c.compareKeepPace
+        : c.compareOrigin;
+  const deltaLabel = delta < 0 ? c.tooltipLoss : c.tooltipGain;
+
   return (
     <section class="chart-section" aria-labelledby="chart-title">
       <h2 id="chart-title">{c.title}</h2>
@@ -203,7 +211,7 @@ export function Chart({ events, cpi }: ChartProps) {
           <span class="legend-swatch swatch-nominal" /> {c.legendNominal}
         </span>
         <span class="legend-item">
-          <span class="legend-swatch swatch-real" /> {c.legendReal}
+          <span class="legend-swatch swatch-real" /> {compareLabel}
         </span>
         {frame === "origin" && (
           <span class="legend-item">
@@ -222,11 +230,11 @@ export function Chart({ events, cpi }: ChartProps) {
             {formatISK(active.nominal)}
           </span>
           <span class="readout-item readout-real">
-            <span class="readout-label">{c.tooltipReal}</span>
+            <span class="readout-label">{compareLabel}</span>
             {formatISK(active.comparison)}
           </span>
           <span class={`readout-item ${deltaClass}`}>
-            <span class="readout-label">{c.tooltipLoss}</span>
+            <span class="readout-label">{deltaLabel}</span>
             {Math.abs(delta) < 1
               ? "—"
               : `${formatISKDelta(delta)} (${formatPercent(deltaPct)})`}
@@ -365,7 +373,13 @@ export function Chart({ events, cpi }: ChartProps) {
           )}
         </svg>
       </div>
-      <p class="chart-anchor-note">{c.anchorNote(formatMonth(series[0].month))}</p>
+      <p class="chart-anchor-note">
+        {frame === "today"
+          ? c.noteToday
+          : frame === "keepPace"
+            ? c.noteKeepPace(formatMonth(series[0].month))
+            : c.anchorNote(formatMonth(series[0].month))}
+      </p>
     </section>
   );
 }
