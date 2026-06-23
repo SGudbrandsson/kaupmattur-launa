@@ -47,8 +47,8 @@ describe("peakGap", () => {
     );
     expect(g).not.toBeNull();
     expect(g!.current).toBe(820000);
-    expect(g!.gap).toBeGreaterThan(0);
-    expect(typeof g!.referenceMonth).toBe("string");
+    expect(g!.referenceMonth).toBe("2023-01");
+    expect(g!.gap).toBeCloseTo(140000, 0);
   });
 
   it("returns null when the latest salary is the all-time real peak", () => {
