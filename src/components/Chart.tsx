@@ -1,6 +1,8 @@
-import { useEffect, useRef, useState } from "preact/hooks";
+import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import { copy } from "../copy";
-import type { SeriesPoint } from "../lib/inflation";
+import type { CpiData } from "../lib/cpi";
+import type { ChartFrame, SalaryEvent } from "../lib/inflation";
+import { analyzePurchasingPower, buildSeries } from "../lib/inflation";
 import {
   formatCompactISK,
   formatISK,
@@ -11,13 +13,22 @@ import {
 } from "../lib/format";
 
 interface ChartProps {
-  series: SeriesPoint[];
+  events: SalaryEvent[];
+  cpi: CpiData;
 }
 
 const MARGIN = { top: 18, right: 16, bottom: 30 };
-const LABEL_CHAR_W = 6.8; // ≈ width of a tabular digit at 11.5px
+const LABEL_CHAR_W = 6.8;
+const FRAMES: ChartFrame[] = ["today", "origin", "keepPace"];
 
-/** Round y-axis ticks to friendly values. */
+function frameLabel(frame: ChartFrame): string {
+  return frame === "today"
+    ? copy.chart.frameToday
+    : frame === "origin"
+      ? copy.chart.frameOrigin
+      : copy.chart.frameKeepPace;
+}
+
 function niceTicks(min: number, max: number, count: number): number[] {
   const span = max - min;
   if (span <= 0) return [min];
@@ -34,12 +45,8 @@ function niceTicks(min: number, max: number, count: number): number[] {
   return ticks;
 }
 
-/**
- * Calendar-aligned x ticks: the smallest of 3/6/12/24/48 months whose
- * labels still fit the available pixel width.
- */
 function xTickIndices(
-  series: SeriesPoint[],
+  series: { month: string }[],
   innerW: number,
 ): { indices: number[]; step: number } {
   const n = series.length;
@@ -55,7 +62,7 @@ function xTickIndices(
       )
       .map(({ i }) => i);
   for (const step of [3, 6, 12, 24, 48]) {
-    if (step < 3 * Math.ceil(n / 40)) continue; // keep at most ~13 candidates
+    if (step < 3 * Math.ceil(n / 40)) continue;
     const indices = pick(step);
     const labelW = step >= 12 ? 42 : 64;
     if (indices.length * labelW <= innerW || step === 48) {
@@ -65,10 +72,11 @@ function xTickIndices(
   return { indices: pick(48), step: 48 };
 }
 
-export function Chart({ series }: ChartProps) {
+export function Chart({ events, cpi }: ChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(640);
   const [hover, setHover] = useState<number | null>(null);
+  const [frame, setFrame] = useState<ChartFrame>("today");
 
   useEffect(() => {
     const el = containerRef.current;
@@ -81,21 +89,27 @@ export function Chart({ series }: ChartProps) {
     return () => observer.disconnect();
   }, []);
 
+  const series = useMemo(
+    () => buildSeries(events, cpi, frame),
+    [events, cpi, frame],
+  );
+  const pp = useMemo(() => analyzePurchasingPower(events, cpi), [events, cpi]);
+
   if (series.length < 2) return null;
 
+  const c = copy.chart;
   const height = width < 480 ? 280 : 360;
   const innerH = height - MARGIN.top - MARGIN.bottom;
 
-  const reals = series.map((p) => p.real);
+  const comparisons = series.map((p) => p.comparison);
   const nominals = series.map((p) => p.nominal);
-  const yMin = Math.min(...reals) * 0.95;
-  const yMax = Math.max(...nominals) * 1.03;
+  const yMin = Math.min(Math.min(...comparisons), Math.min(...nominals)) * 0.95;
+  const yMax = Math.max(Math.max(...comparisons), Math.max(...nominals)) * 1.03;
 
   const yTicks = niceTicks(yMin, yMax, 4);
   const yStep = yTicks.length > 1 ? yTicks[1] - yTicks[0] : undefined;
   const yLabel = (v: number) => formatCompactISK(v, yStep);
 
-  // Size the left margin to the widest tick label so nothing clips.
   const maxLabelChars = Math.max(...yTicks.map((v) => yLabel(v).length));
   const marginLeft = Math.max(44, Math.round(14 + maxLabelChars * LABEL_CHAR_W));
   const innerW = width - marginLeft - MARGIN.right;
@@ -104,7 +118,6 @@ export function Chart({ series }: ChartProps) {
   const y = (v: number) =>
     MARGIN.top + innerH - ((v - yMin) / (yMax - yMin)) * innerH;
 
-  // Nominal: step-after — hold each value until the next change.
   let stepPath = `M ${x(0)} ${y(series[0].nominal)}`;
   for (let i = 1; i < series.length; i++) {
     stepPath += ` H ${x(i)}`;
@@ -113,20 +126,21 @@ export function Chart({ series }: ChartProps) {
     }
   }
 
-  // Real value: straight monthly segments.
-  const realPath = series
-    .map((p, i) => `${i === 0 ? "M" : "L"} ${x(i)} ${y(p.real)}`)
+  const comparePath = series
+    .map((p, i) => `${i === 0 ? "M" : "L"} ${x(i)} ${y(p.comparison)}`)
     .join(" ");
 
-  // Lost value: the region between the two lines (real forward, step back).
-  let bandPath = realPath;
-  for (let i = series.length - 1; i >= 0; i--) {
-    bandPath += ` L ${x(i)} ${y(series[i].nominal)}`;
-    if (i > 0 && series[i].nominal !== series[i - 1].nominal) {
-      bandPath += ` L ${x(i)} ${y(series[i - 1].nominal)}`;
+  let bandPath = "";
+  if (frame === "origin") {
+    bandPath = comparePath;
+    for (let i = series.length - 1; i >= 0; i--) {
+      bandPath += ` L ${x(i)} ${y(series[i].nominal)}`;
+      if (i > 0 && series[i].nominal !== series[i - 1].nominal) {
+        bandPath += ` L ${x(i)} ${y(series[i - 1].nominal)}`;
+      }
     }
+    bandPath += " Z";
   }
-  bandPath += " Z";
 
   const { indices: xIndices, step: xStep } = xTickIndices(series, innerW);
 
@@ -136,10 +150,12 @@ export function Chart({ series }: ChartProps) {
     .map(({ i }) => i);
 
   const last = series.length - 1;
-  const c = copy.chart;
+  const peakIndex =
+    pp && frame !== "keepPace"
+      ? series.findIndex((p) => p.month === pp.peakMonth)
+      : -1;
 
-  // Re-keying this group restarts the entrance animation when data changes.
-  const seriesKey = `${series[0].month}|${last}|${raiseIndices.join(",")}|${series[0].nominal}`;
+  const seriesKey = `${frame}|${series[0].month}|${last}|${raiseIndices.join(",")}|${series[0].nominal}`;
 
   const indexFromEvent = (e: PointerEvent) => {
     const svg = e.currentTarget as SVGElement;
@@ -150,11 +166,38 @@ export function Chart({ series }: ChartProps) {
   };
 
   const active = series[hover ?? last];
-  const loss = active.real - active.nominal;
+  const delta =
+    frame === "origin"
+      ? active.comparison - active.nominal
+      : frame === "today"
+        ? active.comparison - (pp?.peakValueToday ?? active.comparison)
+        : active.nominal - active.comparison;
+  const deltaPct =
+    frame === "keepPace"
+      ? active.nominal / active.comparison - 1
+      : frame === "today"
+        ? active.comparison / (pp?.peakValueToday ?? active.comparison) - 1
+        : active.comparison / active.nominal - 1;
+  const deltaClass = delta < 0 ? "readout-loss" : "readout-gain";
 
   return (
     <section class="chart-section" aria-labelledby="chart-title">
       <h2 id="chart-title">{c.title}</h2>
+
+      <div class="frame-chips" role="group" aria-label={c.framePickLabel}>
+        {FRAMES.map((f) => (
+          <button
+            key={f}
+            type="button"
+            aria-pressed={f === frame}
+            class={`frame-chip${f === frame ? " is-on" : ""}`}
+            onClick={() => setFrame(f)}
+          >
+            {frameLabel(f)}
+          </button>
+        ))}
+      </div>
+
       <div class="chart-legend">
         <span class="legend-item">
           <span class="legend-swatch swatch-nominal" /> {c.legendNominal}
@@ -162,10 +205,13 @@ export function Chart({ series }: ChartProps) {
         <span class="legend-item">
           <span class="legend-swatch swatch-real" /> {c.legendReal}
         </span>
-        <span class="legend-item">
-          <span class="legend-swatch swatch-loss" /> {c.legendLoss}
-        </span>
+        {frame === "origin" && (
+          <span class="legend-item">
+            <span class="legend-swatch swatch-loss" /> {c.legendLoss}
+          </span>
+        )}
       </div>
+
       <div class="chart-card card" ref={containerRef}>
         <div class="chart-readout numeric" aria-live="polite">
           <span class="readout-month">
@@ -177,15 +223,16 @@ export function Chart({ series }: ChartProps) {
           </span>
           <span class="readout-item readout-real">
             <span class="readout-label">{c.tooltipReal}</span>
-            {formatISK(active.real)}
+            {formatISK(active.comparison)}
           </span>
-          <span class="readout-item readout-loss">
+          <span class={`readout-item ${deltaClass}`}>
             <span class="readout-label">{c.tooltipLoss}</span>
-            {loss === 0
+            {Math.abs(delta) < 1
               ? "—"
-              : `${formatISKDelta(loss)} (${formatPercent(active.real / active.nominal - 1)})`}
+              : `${formatISKDelta(delta)} (${formatPercent(deltaPct)})`}
           </span>
         </div>
+
         <svg
           width="100%"
           height={height}
@@ -226,10 +273,24 @@ export function Chart({ series }: ChartProps) {
             </text>
           ))}
 
+          {frame === "today" && pp && (
+            <line
+              x1={marginLeft}
+              x2={width - MARGIN.right}
+              y1={y(pp.nowValue)}
+              y2={y(pp.nowValue)}
+              class="now-line"
+            />
+          )}
+
           <g key={seriesKey}>
-            <path d={bandPath} fill="url(#loss-band)" class="band" />
-            <path d={stepPath} class="line-nominal draw" pathLength={1} />
-            <path d={realPath} class="line-real draw" pathLength={1} />
+            {bandPath && <path d={bandPath} fill="url(#loss-band)" class="band" />}
+            <path
+              d={stepPath}
+              class={`line-nominal draw${frame === "today" ? " is-muted" : ""}`}
+              pathLength={1}
+            />
+            <path d={comparePath} class="line-real draw" pathLength={1} />
           </g>
 
           {raiseIndices.map((i) => (
@@ -254,10 +315,30 @@ export function Chart({ series }: ChartProps) {
             </g>
           ))}
 
-          <circle cx={x(last)} cy={y(series[last].real)} r="4.5" class="today-dot" />
-          <text x={x(last)} y={y(series[last].real) - 12} class="today-label">
-            {c.today}
-          </text>
+          {peakIndex >= 0 && (
+            <g class="peak">
+              <circle
+                cx={x(peakIndex)}
+                cy={y(series[peakIndex].comparison)}
+                r="4.5"
+                class="peak-dot"
+              />
+              <text
+                x={x(peakIndex)}
+                y={y(series[peakIndex].comparison) - 12}
+                class="peak-label"
+              >
+                {c.peakLabel(formatMonthShort(series[peakIndex].month))}
+              </text>
+            </g>
+          )}
+
+          <circle
+            cx={x(last)}
+            cy={y(series[last].comparison)}
+            r="4.5"
+            class="today-dot"
+          />
 
           {hover !== null && (
             <g class="crosshair">
@@ -268,8 +349,18 @@ export function Chart({ series }: ChartProps) {
                 y2={MARGIN.top + innerH}
                 class="crosshair-line"
               />
-              <circle cx={x(hover)} cy={y(active.nominal)} r="4" class="crosshair-dot-nominal" />
-              <circle cx={x(hover)} cy={y(active.real)} r="4" class="crosshair-dot-real" />
+              <circle
+                cx={x(hover)}
+                cy={y(active.nominal)}
+                r="4"
+                class="crosshair-dot-nominal"
+              />
+              <circle
+                cx={x(hover)}
+                cy={y(active.comparison)}
+                r="4"
+                class="crosshair-dot-real"
+              />
             </g>
           )}
         </svg>
