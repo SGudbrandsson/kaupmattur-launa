@@ -15,8 +15,8 @@ export interface SeriesPoint {
   month: MonthKey;
   /** The salary as paid (step function of the events). */
   nominal: number;
-  /** Purchasing power expressed in anchor-month kronur (the first event's month). */
-  real: number;
+  /** The comparison line; its meaning depends on the chart frame. */
+  comparison: number;
   /** The month of the most recent salary event on or before this point. */
   eventMonth: MonthKey;
 }
@@ -138,16 +138,23 @@ export function analyzePurchasingPower(
 
 /**
  * Monthly series from the earliest event through the latest CPI month.
- * Nominal is a step function. The real line is one continuous story:
- * every value is expressed in the kronur of the FIRST event's month
- * (the anchor), so raises appear exactly as large as they are in real
- * terms — a raise that fails to beat inflation visibly fails to reach
- * the old level. Events must be within the CPI range; sorted internally.
+ * Nominal is a step function. The `comparison` line depends on the frame:
+ *  - "origin": real value in the FIRST event month's krónur (the anchor) —
+ *    raises appear as large as they are in real terms;
+ *  - "today": real value restated in today's krónur;
+ *  - "keepPace": the salary needed each month to hold the first salary's
+ *    purchasing power (the inflation baseline).
+ * Events must be within the CPI range; sorted internally.
  */
-export function buildSeries(events: SalaryEvent[], cpi: CpiData): SeriesPoint[] {
+export function buildSeries(
+  events: SalaryEvent[],
+  cpi: CpiData,
+  frame: ChartFrame = "origin",
+): SeriesPoint[] {
   if (events.length === 0) return [];
   const sorted = [...events].sort((a, b) => compareMonths(a.month, b.month));
   const anchor = sorted[0].month;
+  const firstAmount = sorted[0].amount;
   const points: SeriesPoint[] = [];
   let active = 0;
   for (const month of monthRange(anchor, cpi.lastMonth)) {
@@ -158,12 +165,15 @@ export function buildSeries(events: SalaryEvent[], cpi: CpiData): SeriesPoint[] 
       active++;
     }
     const { month: eventMonth, amount } = sorted[active];
-    points.push({
-      month,
-      nominal: amount,
-      eventMonth,
-      real: realValue(amount, anchor, month, cpi),
-    });
+    let comparison: number;
+    if (frame === "today") {
+      comparison = requiredToday(amount, month, cpi);
+    } else if (frame === "keepPace") {
+      comparison = firstAmount * (1 + cumulativeInflation(anchor, month, cpi));
+    } else {
+      comparison = realValue(amount, anchor, month, cpi);
+    }
+    points.push({ month, nominal: amount, comparison, eventMonth });
   }
   return points;
 }

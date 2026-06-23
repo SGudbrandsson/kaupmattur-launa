@@ -81,8 +81,8 @@ describe("buildSeries", () => {
       "2025-04",
       "2025-05",
     ]);
-    expect(series[0].real).toBe(1000);
-    expect(series.at(-1)!.real).toBeCloseTo((1000 * 110) / 200, 12);
+    expect(series[0].comparison).toBe(1000);
+    expect(series.at(-1)!.comparison).toBeCloseTo((1000 * 110) / 200, 12);
   });
 
   it("keeps one continuous anchor: raises are measured in first-month kronur", () => {
@@ -97,14 +97,14 @@ describe("buildSeries", () => {
     // Before the raise: decaying against the 2025-01 anchor.
     expect(byMonth["2025-03"].eventMonth).toBe("2025-01");
     expect(byMonth["2025-03"].nominal).toBe(1000);
-    expect(byMonth["2025-03"].real).toBeCloseTo(1000 * (100 / 125), 12);
+    expect(byMonth["2025-03"].comparison).toBeCloseTo(1000 * (100 / 125), 12);
     // At the raise: the new nominal is still expressed in anchor kronur,
     // NOT reset to face value — 2000 buys what 1250 bought in January.
     expect(byMonth["2025-04"].eventMonth).toBe("2025-04");
     expect(byMonth["2025-04"].nominal).toBe(2000);
-    expect(byMonth["2025-04"].real).toBeCloseTo(2000 * (100 / 160), 12);
+    expect(byMonth["2025-04"].comparison).toBeCloseTo(2000 * (100 / 160), 12);
     // After the raise: continues decaying against the same anchor.
-    expect(byMonth["2025-05"].real).toBeCloseTo(2000 * (100 / 200), 12);
+    expect(byMonth["2025-05"].comparison).toBeCloseTo(2000 * (100 / 200), 12);
   });
 
   it("a raise that fails to beat inflation stays below the original real level", () => {
@@ -117,13 +117,13 @@ describe("buildSeries", () => {
       synthetic,
     );
     const atRaise = series.find((p) => p.month === "2025-04")!;
-    expect(atRaise.real).toBeLessThan(1000);
+    expect(atRaise.comparison).toBeLessThan(1000);
   });
 
   it("handles an event in lastMonth itself: single point, real == nominal", () => {
     const series = buildSeries([{ month: "2025-05", amount: 900 }], synthetic);
     expect(series).toEqual([
-      { month: "2025-05", nominal: 900, real: 900, eventMonth: "2025-05" },
+      { month: "2025-05", nominal: 900, comparison: 900, eventMonth: "2025-05" },
     ]);
   });
 
@@ -222,5 +222,27 @@ describe("analyzePurchasingPower", () => {
     )!;
     expect(pp.monthlyLoss).toBe(0);
     expect(pp.atPeak).toBe(true);
+  });
+});
+
+describe("buildSeries frames", () => {
+  const events = [{ month: "2025-01", amount: 1000 }];
+
+  it("origin (default) expresses comparison in first-month krónur", () => {
+    const s = buildSeries(events, synthetic, "origin");
+    expect(s.at(-1)!.comparison).toBeCloseTo(500, 9);
+    expect(buildSeries(events, synthetic).at(-1)!.comparison).toBeCloseTo(500, 9);
+  });
+
+  it("today expresses comparison in today's krónur", () => {
+    const s = buildSeries(events, synthetic, "today");
+    expect(s[0].comparison).toBeCloseTo(2000, 9);
+    expect(s.at(-1)!.comparison).toBeCloseTo(1000, 9);
+  });
+
+  it("keepPace draws the baseline needed to hold the first salary's power", () => {
+    const s = buildSeries(events, synthetic, "keepPace");
+    expect(s.at(-1)!.comparison).toBeCloseTo(2000, 9);
+    expect(s[0].comparison).toBeCloseTo(1000, 9);
   });
 });
