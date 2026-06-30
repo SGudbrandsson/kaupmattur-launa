@@ -141,13 +141,14 @@ export function ProfileBar(props: ProfileBarProps) {
       )}
 
       {renaming !== null && (
-        <div class="profile-dialog" role="dialog" aria-label={c.renameTitle}>
+        <div class="profile-dialog" role="dialog" aria-label={c.renameTitle} aria-modal="true">
           <input
             class="profile-rename-input"
             type="text"
             value={renaming}
             maxLength={60}
             autocomplete="off"
+            autofocus
             onInput={(e) => setRenaming(e.currentTarget.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter") { props.onRename(renaming); setRenaming(null); }
@@ -162,7 +163,7 @@ export function ProfileBar(props: ProfileBarProps) {
       )}
 
       {confirmDelete && (
-        <div class="profile-dialog" role="alertdialog" aria-label={c.delete}>
+        <div class="profile-dialog" role="alertdialog" aria-label={c.delete} aria-modal="true">
           <p>{c.deleteConfirm(props.activeName)}</p>
           <div class="profile-dialog-actions">
             <button type="button" class="profile-delete-confirm" onClick={() => { setConfirmDelete(false); props.onDelete(); }}>{c.delete}</button>
