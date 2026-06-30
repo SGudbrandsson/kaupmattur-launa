@@ -19,8 +19,6 @@ import {
 interface PayoffCardProps {
   events: SalaryEvent[];
   cpi: CpiData;
-  onTryOwn?: () => void;
-  isExample?: boolean;
 }
 
 /** Monochrome stroke icons, matching the lock icon style used elsewhere. */
@@ -89,7 +87,7 @@ function lensText(v: LensValue): string {
   }
 }
 
-export function PayoffCard({ events, cpi, onTryOwn, isExample }: PayoffCardProps) {
+export function PayoffCard({ events, cpi }: PayoffCardProps) {
   const [selected, setSelected] = useState<LensKey>("raise");
   const pp = analyzePurchasingPower(events, cpi);
   if (!pp) return null;
@@ -149,12 +147,6 @@ export function PayoffCard({ events, cpi, onTryOwn, isExample }: PayoffCardProps
         <p class="lens-text">{lensText(active)}</p>
         <span class={`lens-basis is-${active.basis}`}>{basisLabel}</span>
       </div>
-
-      {isExample && onTryOwn && (
-        <button type="button" class="payoff-cta" onClick={onTryOwn}>
-          {copy.payoff.cta}
-        </button>
-      )}
     </section>
   );
 }
