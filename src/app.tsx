@@ -9,6 +9,7 @@ import { Chart } from "./components/Chart";
 import { getCpi } from "./lib/cpi";
 import type { SalaryEvent } from "./lib/inflation";
 import { formatISK } from "./lib/format";
+import { copy } from "./copy";
 import { loadStore, saveStore } from "./lib/storage";
 import {
   MAX_IMPORT_BYTES,
@@ -61,6 +62,7 @@ export function App() {
   const [rows, setRows] = useState<DraftRow[]>(() => entriesToRows(active.entries));
   useEffect(() => {
     setRows(entriesToRows(active.entries));
+    // Intentionally keyed only on resolvedId: rebuild rows on profile switch, not on every entries change (which would clobber in-progress edits).
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active.resolvedId]);
 
@@ -74,6 +76,7 @@ export function App() {
       saveStore(next);
       return next;
     });
+    // active.resolvedId/readOnly are the meaningful deps; events drives the save.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [events, active.readOnly, active.resolvedId]);
 
@@ -107,22 +110,25 @@ export function App() {
     downloadJson(safeFilename(active.name), serializeProfile(active.name, events));
   const onImportFile = (file: File) => {
     if (file.size > MAX_IMPORT_BYTES) {
-      window.alert("Skráin er of stór.");
+      window.alert(copy.profiles.fileTooLarge);
       return;
     }
-    file.text().then((text) => {
-      const result = parseProfileFile(text, cpi);
-      if ("error" in result) {
-        window.alert(result.error);
-        return;
-      }
-      const added = addProfile(store, result.name, result.entries, cpi);
-      if ("error" in added) {
-        window.alert("Hámarksfjölda sniða náð.");
-        return;
-      }
-      commit(added.store);
-    });
+    file
+      .text()
+      .then((text) => {
+        const result = parseProfileFile(text, cpi);
+        if ("error" in result) {
+          window.alert(result.error);
+          return;
+        }
+        const added = addProfile(store, result.name, result.entries, cpi);
+        if ("error" in added) {
+          window.alert(copy.profiles.limitReached);
+          return;
+        }
+        commit(added.store);
+      })
+      .catch(() => window.alert(copy.profiles.importError));
   };
 
   return (

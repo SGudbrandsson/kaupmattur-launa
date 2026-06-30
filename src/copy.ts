@@ -49,6 +49,7 @@ export const copy = {
     emptyState: "Skráðu fyrstu launin þín hér að neðan til að sjá kaupmáttinn.",
     importError: "Gat ekki lesið skrána.",
     limitReached: "Hámarksfjölda sniða náð.",
+    fileTooLarge: "Skráin er of stór.",
     switchLabel: "Veldu snið",
   },
 
