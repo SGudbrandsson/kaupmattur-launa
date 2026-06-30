@@ -148,6 +148,80 @@ export interface ActiveResolved {
   readOnly: boolean;
 }
 
+/** A name not already used; suffixes " (2)", " (3)", … on collision. */
+function uniqueName(store: Store, base: string): string {
+  const names = new Set(store.profiles.map((p) => p.name));
+  if (!names.has(base)) return base;
+  let n = 2;
+  while (names.has(`${base} (${n})`)) n++;
+  return `${base} (${n})`;
+}
+
+export function createProfile(store: Store, name = "Nýtt snið"): { store: Store; id: string } {
+  if (store.profiles.length >= MAX_PROFILES) return { store, id: store.activeId };
+  const id = newId();
+  const profile: Profile = {
+    id,
+    name: name.trim().slice(0, MAX_NAME_LEN) || "Nýtt snið",
+    entries: [],
+  };
+  return { store: { ...store, profiles: [...store.profiles, profile], activeId: id }, id };
+}
+
+export function renameProfile(store: Store, id: string, name: string): Store {
+  const trimmed = name.trim().slice(0, MAX_NAME_LEN);
+  if (!trimmed) return store;
+  return { ...store, profiles: store.profiles.map((p) => (p.id === id ? { ...p, name: trimmed } : p)) };
+}
+
+export function deleteProfile(store: Store, id: string): Store {
+  const profiles = store.profiles.filter((p) => p.id !== id);
+  const activeId = store.activeId === id ? (profiles.at(-1)?.id ?? DEFAULT_PRESET_ID) : store.activeId;
+  return { ...store, profiles, activeId };
+}
+
+export function duplicateProfile(store: Store, id: string): Store {
+  const src = store.profiles.find((p) => p.id === id);
+  if (!src || store.profiles.length >= MAX_PROFILES) return store;
+  const copy: Profile = { id: newId(), name: uniqueName(store, `${src.name} (afrit)`), entries: [...src.entries] };
+  return { ...store, profiles: [...store.profiles, copy], activeId: copy.id };
+}
+
+export function setActive(store: Store, id: string): Store {
+  return { ...store, activeId: id };
+}
+
+export function updateEntries(store: Store, id: string, entries: SalaryEvent[]): Store {
+  return { ...store, profiles: store.profiles.map((p) => (p.id === id ? { ...p, entries } : p)) };
+}
+
+export function forkPreset(store: Store, preset: Preset, cpi: CpiData): Store {
+  if (store.profiles.length >= MAX_PROFILES) return store;
+  const copy: Profile = {
+    id: newId(),
+    name: uniqueName(store, `${preset.name} (afrit)`),
+    entries: sanitizeEntries(preset.entries, cpi),
+  };
+  return { ...store, profiles: [...store.profiles, copy], activeId: copy.id };
+}
+
+/** Add an imported profile (sanitized, suffixed, capped). */
+export function addProfile(
+  store: Store,
+  name: string,
+  entries: SalaryEvent[],
+  cpi: CpiData,
+): { store: Store; id: string } | { error: "limit" } {
+  if (store.profiles.length >= MAX_PROFILES) return { error: "limit" };
+  const id = newId();
+  const profile: Profile = {
+    id,
+    name: uniqueName(store, name.trim().slice(0, MAX_NAME_LEN) || "Innflutt snið"),
+    entries: sanitizeEntries(entries, cpi).slice(0, MAX_ENTRIES),
+  };
+  return { store: { ...store, profiles: [...store.profiles, profile], activeId: id }, id };
+}
+
 /** The active profile's data, with a corrected id when activeId is stale. */
 export function resolveActive(
   store: Store,

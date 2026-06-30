@@ -10,6 +10,14 @@ import {
   resolveActive,
   sanitizeEntries,
   validateStore,
+  addProfile,
+  createProfile,
+  deleteProfile,
+  duplicateProfile,
+  forkPreset,
+  renameProfile,
+  setActive,
+  updateEntries,
 } from "../src/lib/profiles";
 
 const cpi: CpiData = {
@@ -127,5 +135,58 @@ describe("resolveActive", () => {
   it("falls back to the preset when there are no user profiles", () => {
     const store = { v: 2 as const, activeId: "gone", profiles: [] };
     expect(resolveActive(store, [preset], cpi).resolvedId).toBe(DEFAULT_PRESET_ID);
+  });
+});
+
+describe("mutations", () => {
+  const base = () => ({ v: 2 as const, activeId: "a", profiles: [{ id: "a", name: "A", entries: [] as never[] }] });
+
+  it("createProfile adds a blank profile and activates it", () => {
+    const { store, id } = createProfile(base());
+    expect(store.profiles).toHaveLength(2);
+    expect(store.activeId).toBe(id);
+    expect(store.profiles.at(-1)).toMatchObject({ name: "Nýtt snið", entries: [] });
+  });
+
+  it("renameProfile trims; rejects empty", () => {
+    expect(renameProfile(base(), "a", "  Anna ").profiles[0].name).toBe("Anna");
+    expect(renameProfile(base(), "a", "   ").profiles[0].name).toBe("A");
+  });
+
+  it("deleteProfile falls back to the last remaining profile, else the preset", () => {
+    const two = { v: 2 as const, activeId: "a", profiles: [{ id: "a", name: "A", entries: [] }, { id: "b", name: "B", entries: [] }] };
+    expect(deleteProfile(two, "a").activeId).toBe("b");
+    expect(deleteProfile(base(), "a").activeId).toBe(DEFAULT_PRESET_ID);
+  });
+
+  it("duplicateProfile suffixes the name and activates the copy", () => {
+    const s = duplicateProfile(base(), "a");
+    expect(s.profiles.at(-1)!.name).toBe("A (afrit)");
+    expect(s.activeId).toBe(s.profiles.at(-1)!.id);
+  });
+
+  it("setActive / updateEntries", () => {
+    expect(setActive(base(), "z").activeId).toBe("z");
+    const s = updateEntries(base(), "a", [{ month: "2020-01", amount: 5 }]);
+    expect(s.profiles[0].entries).toEqual([{ month: "2020-01", amount: 5 }]);
+  });
+
+  it("forkPreset creates a sanitized editable copy, active", () => {
+    const cpi: CpiData = { source: "t", fetchedAt: "x", firstMonth: "2020-01", lastMonth: "2020-02", values: { "2020-01": 100, "2020-02": 110 } };
+    const s = forkPreset(base(), { id: DEFAULT_PRESET_ID, name: "Lágmarkslaun", source: "ASÍ", entries: [{ month: "2020-01", amount: 300000 }, { month: "2099-01", amount: 1 }] }, cpi);
+    expect(s.profiles.at(-1)!.name).toBe("Lágmarkslaun (afrit)");
+    expect(s.profiles.at(-1)!.entries).toEqual([{ month: "2020-01", amount: 300000 }]);
+    expect(s.activeId).toBe(s.profiles.at(-1)!.id);
+  });
+
+  it("addProfile (import) sanitizes, suffixes collisions, caps", () => {
+    const cpi: CpiData = { source: "t", fetchedAt: "x", firstMonth: "2020-01", lastMonth: "2020-02", values: { "2020-01": 100, "2020-02": 110 } };
+    const start = { v: 2 as const, activeId: "a", profiles: [{ id: "a", name: "Anna", entries: [] }] };
+    const res = addProfile(start, "Anna", [{ month: "2020-01", amount: 9 }], cpi);
+    expect("store" in res).toBe(true);
+    if ("store" in res) {
+      expect(res.store.profiles.at(-1)!.name).toBe("Anna (2)");
+      expect(res.store.activeId).toBe(res.id);
+    }
   });
 });
