@@ -71,10 +71,11 @@ interface MonthPickerProps {
   month: MonthKey;
   cpi: CpiData;
   rowId: string;
+  disabled?: boolean;
   onChange: (month: MonthKey) => void;
 }
 
-export function MonthPicker({ month, cpi, rowId, onChange }: MonthPickerProps) {
+export function MonthPicker({ month, cpi, rowId, disabled, onChange }: MonthPickerProps) {
   const [firstYear, firstMonth] = cpi.firstMonth.split("-").map(Number);
   const [lastYear, lastMonth] = cpi.lastMonth.split("-").map(Number);
   const [year, monthNum] = month.split("-").map(Number);
@@ -100,6 +101,7 @@ export function MonthPicker({ month, cpi, rowId, onChange }: MonthPickerProps) {
           aria-label={copy.form.monthLabel}
           value={monthNum}
           id={`month-${rowId}`}
+          disabled={disabled}
           onChange={(e) => setYearMonth(year, Number(e.currentTarget.value))}
         >
           {MONTHS_LONG.map((name, i) => (
@@ -119,6 +121,7 @@ export function MonthPicker({ month, cpi, rowId, onChange }: MonthPickerProps) {
           aria-label={copy.form.yearLabel}
           value={year}
           id={`year-${rowId}`}
+          disabled={disabled}
           onChange={(e) => setYearMonth(Number(e.currentTarget.value), monthNum)}
         >
           {years.map((y) => (
@@ -136,11 +139,12 @@ interface SalaryFormProps {
   rows: DraftRow[];
   errors: Map<string, string>;
   cpi: CpiData;
-  isExample: boolean;
+  readOnly: boolean;
+  presetSource?: string;
   onChangeRow: (id: string, patch: Partial<Omit<DraftRow, "id">>) => void;
   onAddRow: () => void;
   onRemoveRow: (id: string) => void;
-  onClearExample: () => void;
+  onFork: () => void;
   onAiApply: (events: SalaryEvent[]) => void;
 }
 
@@ -175,6 +179,8 @@ export function SalaryForm(props: SalaryFormProps) {
     });
   };
 
+  const isEmpty = props.rows.every((r) => r.amountText.trim() === "");
+
   return (
     <section class="salary rise rise-3" aria-labelledby="salary-title">
       <h2 id="salary-title">{f.title}</h2>
@@ -183,19 +189,18 @@ export function SalaryForm(props: SalaryFormProps) {
         <LockIcon />
         {copy.privacy.inline}
       </p>
-      {aiReady && (
+      {aiReady && !props.readOnly && (
         <AiAutofill
           cpi={props.cpi}
           onApply={props.onAiApply}
           speechLangs={speechLangs}
         />
       )}
-      {props.isExample && (
-        <div class="example-banner">
-          <span class="example-tag">{f.exampleTag}</span>
-          <span>{f.exampleNote}</span>
-          <button type="button" class="example-cta" onClick={props.onClearExample}>
-            {f.exampleCta}
+      {props.readOnly && (
+        <div class="preset-banner">
+          <span>{copy.profiles.presetLockedBanner(props.presetSource ?? "")}</span>
+          <button type="button" class="example-cta" onClick={props.onFork}>
+            {copy.profiles.forkCta}
           </button>
         </div>
       )}
@@ -208,6 +213,7 @@ export function SalaryForm(props: SalaryFormProps) {
                 month={row.month}
                 cpi={props.cpi}
                 rowId={row.id}
+                disabled={props.readOnly}
                 onChange={(month) => props.onChangeRow(row.id, { month })}
               />
               <label class="field field-amount">
@@ -219,6 +225,7 @@ export function SalaryForm(props: SalaryFormProps) {
                     autocomplete="off"
                     placeholder={f.amountPlaceholder}
                     value={row.amountText}
+                    disabled={props.readOnly}
                     aria-invalid={error ? "true" : undefined}
                     aria-describedby={error ? `err-${row.id}` : undefined}
                     onInput={(e) =>
@@ -229,7 +236,7 @@ export function SalaryForm(props: SalaryFormProps) {
                   <span class="amount-suffix">{f.amountSuffix}</span>
                 </div>
               </label>
-              {props.rows.length > 1 && (
+              {!props.readOnly && props.rows.length > 1 && (
                 <button
                   type="button"
                   class="remove-row"
@@ -249,9 +256,14 @@ export function SalaryForm(props: SalaryFormProps) {
           );
         })}
       </div>
-      <button type="button" class="add-row" onClick={props.onAddRow}>
-        <span aria-hidden="true">+</span> {f.addButton}
-      </button>
+      {!props.readOnly && (
+        <button type="button" class="add-row" onClick={props.onAddRow}>
+          <span aria-hidden="true">+</span> {f.addButton}
+        </button>
+      )}
+      {!props.readOnly && isEmpty && (
+        <p class="form-empty">{copy.profiles.emptyState}</p>
+      )}
     </section>
   );
 }
