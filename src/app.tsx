@@ -157,6 +157,7 @@ export function App() {
           cpi={cpi}
           readOnly={active.readOnly}
           presetSource={active.source}
+          presetKind={active.presetKind}
           onChangeRow={changeRow}
           onAddRow={addRow}
           onRemoveRow={removeRow}

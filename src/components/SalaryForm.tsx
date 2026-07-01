@@ -141,6 +141,7 @@ interface SalaryFormProps {
   cpi: CpiData;
   readOnly: boolean;
   presetSource?: string;
+  presetKind?: import("../lib/profiles").PresetKind;
   onChangeRow: (id: string, patch: Partial<Omit<DraftRow, "id">>) => void;
   onAddRow: () => void;
   onRemoveRow: (id: string) => void;
@@ -199,6 +200,11 @@ export function SalaryForm(props: SalaryFormProps) {
       {props.readOnly && (
         <div class="preset-banner">
           <span>{copy.profiles.presetLockedBanner(props.presetSource ?? "")}</span>
+          {props.presetKind && (
+            <span class="preset-kind-note">
+              {copy.profiles.presetKinds[props.presetKind].banner}
+            </span>
+          )}
           <button type="button" class="example-cta" onClick={props.onFork}>
             {copy.profiles.forkCta}
           </button>
