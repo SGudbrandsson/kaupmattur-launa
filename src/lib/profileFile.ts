@@ -9,7 +9,17 @@ interface ProfileFile {
   entries: SalaryEvent[];
 }
 
-export type ParseResult = { name: string; entries: SalaryEvent[] } | { error: string };
+/** Machine-readable reason a file failed to parse; UI maps these to copy. */
+export type ParseError =
+  | "notJson"
+  | "notObject"
+  | "wrongFormat"
+  | "noEntries"
+  | "tooManyEntries";
+
+export type ParseResult =
+  | { name: string; entries: SalaryEvent[] }
+  | { error: ParseError };
 
 export function serializeProfile(name: string, entries: SalaryEvent[]): string {
   const file: ProfileFile = { v: 1, kind: "kaupmattur-profile", name, entries };
@@ -21,16 +31,16 @@ export function parseProfileFile(text: string, cpi: CpiData): ParseResult {
   try {
     raw = JSON.parse(text);
   } catch {
-    return { error: "Skráin er ekki gild JSON-skrá." };
+    return { error: "notJson" };
   }
-  if (typeof raw !== "object" || raw === null) return { error: "Skráin er ekki gild." };
+  if (typeof raw !== "object" || raw === null) return { error: "notObject" };
   const r = raw as Partial<ProfileFile>;
   if (r.kind !== "kaupmattur-profile" || r.v !== 1 || !Array.isArray(r.entries)) {
-    return { error: "Þetta er ekki gilt sniðsskjal." };
+    return { error: "wrongFormat" };
   }
   const entries = sanitizeEntries(r.entries as SalaryEvent[], cpi);
-  if (entries.length === 0) return { error: "Engar gildar færslur fundust í skránni." };
-  if (entries.length > MAX_ENTRIES) return { error: "Of margar færslur í skránni." };
+  if (entries.length === 0) return { error: "noEntries" };
+  if (entries.length > MAX_ENTRIES) return { error: "tooManyEntries" };
   const name = typeof r.name === "string" ? r.name : "Innflutt snið";
   return { name, entries };
 }

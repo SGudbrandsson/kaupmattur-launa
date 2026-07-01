@@ -118,7 +118,7 @@ export function App() {
       .then((text) => {
         const result = parseProfileFile(text, cpi);
         if ("error" in result) {
-          window.alert(result.error);
+          window.alert(copy.profiles.importErrors[result.error] ?? copy.profiles.importError);
           return;
         }
         const added = addProfile(store, result.name, result.entries, cpi);

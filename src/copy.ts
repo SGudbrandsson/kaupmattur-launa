@@ -48,6 +48,13 @@ export const copy = {
     cancel: "Hætta við",
     emptyState: "Skráðu fyrstu launin þín hér að neðan til að sjá kaupmáttinn.",
     importError: "Gat ekki lesið skrána.",
+    importErrors: {
+      notJson: "Skráin er ekki gild JSON-skrá.",
+      notObject: "Skráin er ekki gild.",
+      wrongFormat: "Þetta er ekki gilt sniðsskjal.",
+      noEntries: "Engar gildar færslur fundust í skránni.",
+      tooManyEntries: "Of margar færslur í skránni.",
+    } as Record<string, string>,
     limitReached: "Hámarksfjölda sniða náð.",
     fileTooLarge: "Skráin er of stór.",
     switchLabel: "Veldu snið",
