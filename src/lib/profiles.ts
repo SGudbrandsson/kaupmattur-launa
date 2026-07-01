@@ -30,6 +30,30 @@ export const MAX_NAME_LEN = 60;
 export const MAX_ENTRIES = 600;
 export const MAX_IMPORT_BYTES = 1_000_000;
 
+export const MANY_ENTRIES_THRESHOLD = 5;
+
+export interface HistorySpan {
+  count: number;
+  firstYear: number;
+  lastYear: number;
+}
+
+/** Count and year-span of a set of salary events; malformed months are skipped. */
+export function historySpan(events: SalaryEvent[]): HistorySpan {
+  let firstYear = Infinity;
+  let lastYear = -Infinity;
+  let count = 0;
+  for (const e of events) {
+    const y = Number(e.month.slice(0, 4));
+    if (!Number.isFinite(y)) continue;
+    count++;
+    if (y < firstYear) firstYear = y;
+    if (y > lastYear) lastYear = y;
+  }
+  if (count === 0) return { count: 0, firstYear: 0, lastYear: 0 };
+  return { count, firstYear, lastYear };
+}
+
 /** Unique id that never collides with the reserved "preset:" namespace. */
 export function newId(): string {
   const raw =
