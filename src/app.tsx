@@ -151,6 +151,7 @@ export function App() {
           onImportFile={onImportFile}
         />
         <PayoffCard events={events} cpi={cpi} />
+        <Chart events={events} cpi={cpi} />
         <SalaryForm
           rows={rows}
           errors={errors}
@@ -158,14 +159,14 @@ export function App() {
           readOnly={active.readOnly}
           presetSource={active.source}
           presetKind={active.presetKind}
+          profileKey={active.resolvedId}
           onChangeRow={changeRow}
           onAddRow={addRow}
           onRemoveRow={removeRow}
           onFork={onFork}
           onAiApply={replaceRows}
         />
-        <Chart events={events} cpi={cpi} />
-        <SummaryCards events={events} cpi={cpi} />
+        <SummaryCards events={events} cpi={cpi} profileKey={active.resolvedId} />
         <Methodology />
       </main>
     </>
