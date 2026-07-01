@@ -14,7 +14,7 @@ export interface Store {
   profiles: Profile[];
 }
 
-export type PresetKind = "minimum" | "taxi" | "survey";
+export type PresetKind = "minimum" | "survey";
 
 export interface Preset {
   id: string;

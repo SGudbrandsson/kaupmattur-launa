@@ -20,14 +20,14 @@ describe("PRESETS", () => {
   });
 
   it("every preset declares a valid kind", () => {
-    const kinds = new Set(["minimum", "taxi", "survey"]);
+    const kinds = new Set(["minimum", "survey"]);
     for (const p of PRESETS) {
       expect(kinds.has(p.kind)).toBe(true);
     }
   });
 
   it("every flavor has non-empty badge and banner copy", () => {
-    const kinds: Array<"minimum" | "taxi" | "survey"> = ["minimum", "taxi", "survey"];
+    const kinds: Array<"minimum" | "survey"> = ["minimum", "survey"];
     for (const k of kinds) {
       const c = copy.profiles.presetKinds[k];
       expect(c).toBeDefined();

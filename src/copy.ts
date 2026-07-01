@@ -65,11 +65,6 @@ export const copy = {
         badge: "lágmark",
         banner: "Lágmarkstekjur fyrir fullt starf — kjarasamningsbundið lágmark.",
       },
-      taxi: {
-        badge: "grunntaxti",
-        banner:
-          "Grunntaxti kjarasamnings — raunveruleg laun eru oft hærri (vaktaálag, yfirvinna).",
-      },
       survey: {
         badge: "miðgildi",
         banner:
