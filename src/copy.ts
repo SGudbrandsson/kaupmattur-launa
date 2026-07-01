@@ -58,6 +58,22 @@ export const copy = {
     limitReached: "Hámarksfjölda sniða náð.",
     fileTooLarge: "Skráin er of stór.",
     switchLabel: "Veldu snið",
+    presetKinds: {
+      minimum: {
+        badge: "lágmark",
+        banner: "Lágmarkstekjur fyrir fullt starf — kjarasamningsbundið lágmark.",
+      },
+      taxi: {
+        badge: "grunntaxti",
+        banner:
+          "Grunntaxti kjarasamnings — raunveruleg laun eru oft hærri (vaktaálag, yfirvinna).",
+      },
+      survey: {
+        badge: "miðgildi",
+        banner:
+          "Miðgildi raunverulegra heildarlauna úr launarannsókn — ekki taxti; helmingur er yfir og helmingur undir.",
+      },
+    } as Record<string, { badge: string; banner: string }>,
   },
 
   lenses: {
