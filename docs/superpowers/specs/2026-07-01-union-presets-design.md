@@ -1,7 +1,32 @@
 # Union-data presets: labeled public salary histories
 
 **Date:** 2026-07-01
-**Status:** Approved (brainstorm), pending implementation plan
+**Status:** Implemented (with data-source amendment — see below)
+
+## Amendment (2026-07-01, during implementation)
+
+The union PDFs proved unworkable as an autonomous data source: only the Sept
+2024 VR edition was machine-extractable (older editions use subsetted fonts),
+and the public-sector launatöflur online cover only the current 2024–2028
+agreement (no historical depth). Rather than hand-transcribe or ship a thin/
+guessed series, the three profession presets are sourced from **Hagstofa
+Íslands table VIN02001** — miðgildi heildarlauna fullvinnandi by starfsstétt,
+2014–2024, machine-readable via the PX-Web API (same authority as the CPI).
+
+Consequences vs. the original design below:
+- Teacher (`2331` grunnskólakennsla) and nurse (`2230` hjúkrun/ljósmæður) are
+  now **actual medians (`survey`), not contractual taxi.** Retail is `522`
+  afgreiðslu-/sölustörf.
+- The **`taxi` flavor is dropped** — no preset uses a contractual base rate.
+  `PresetKind` is `"minimum" | "survey"`. (If contractual-taxi presets are
+  wanted later, re-add the flavor + copy.)
+- Each annual figure is placed at mid-year (`YYYY-06`). Refresh procedure is in
+  the README (Hagstofa API query), replacing the PDF/zlib recipe.
+
+The rest of the design (kind field, badge, banner explainer, read-only + fork,
+CPI-range guard, tests) is unchanged.
+
+---
 
 ## Problem
 

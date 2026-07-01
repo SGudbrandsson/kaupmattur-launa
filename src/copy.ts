@@ -2,6 +2,8 @@
  * Every user-facing string lives here, in Icelandic. Components never
  * hard-code text, so a second locale can be added without touching them.
  */
+import type { PresetKind } from "./lib/profiles";
+
 export const copy = {
   hero: {
     kicker: "Kaupmáttur launa",
@@ -58,6 +60,17 @@ export const copy = {
     limitReached: "Hámarksfjölda sniða náð.",
     fileTooLarge: "Skráin er of stór.",
     switchLabel: "Veldu snið",
+    presetKinds: {
+      minimum: {
+        badge: "lágmark",
+        banner: "Lágmarkstekjur fyrir fullt starf — kjarasamningsbundið lágmark.",
+      },
+      survey: {
+        badge: "miðgildi",
+        banner:
+          "Miðgildi raunverulegra heildarlauna úr launarannsókn — ekki taxti; helmingur er yfir og helmingur undir.",
+      },
+    } as Record<PresetKind, { badge: string; banner: string }>,
   },
 
   lenses: {

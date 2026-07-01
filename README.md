@@ -32,6 +32,44 @@ editable copy. Storage migrates the old single-slot format to the multi-profile
 store automatically. Code: `src/lib/profiles.ts`, `src/lib/storage.ts`,
 `src/lib/profileFile.ts`, `src/components/ProfileBar.tsx`.
 
+### Refreshing presets
+
+Public presets in `src/data/presets.ts` are hand-curated from cited authorities
+(they are NOT auto-updated with the CPI):
+
+- **Lágmarkslaun** (`kind: "minimum"`) — SGS/ASÍ lágmarkstekjur fyrir fullt
+  starf (asi.is), dated at each kjarasamningsbundna hækkun.
+- **Afgreiðslu- og sölufólk / Grunnskólakennarar / Hjúkrunarfræðingar**
+  (`kind: "survey"`) — miðgildi heildarlauna fullvinnandi by starfsstétt from
+  **Hagstofa Íslands table VIN02001** (annual, machine-readable via the PX-Web
+  API). Each annual figure is placed at mid-year (`YYYY-06`) and amounts are
+  þús. kr × 1000.
+
+To refresh a survey preset, re-query the Hagstofa API (values come back in
+þús. kr; multiply by 1000):
+
+```bash
+curl -sL -X POST \
+  "https://px.hagstofa.is/pxis/api/v1/is/Samfelag/launogtekjur/1_laun/1_laun/VIN02001.px" \
+  -H "Content-Type: application/json" -d '{
+    "query": [
+      {"code": "Starf", "selection": {"filter": "item", "values": ["522 *", "2331*", "2230*"]}},
+      {"code": "Kyn", "selection": {"filter": "item", "values": ["0"]}},
+      {"code": "Laun og vinnutími", "selection": {"filter": "item", "values": ["3"]}},
+      {"code": "Eining", "selection": {"filter": "item", "values": ["2"]}}
+    ],
+    "response": {"format": "json-stat2"}
+  }'
+```
+
+`Starf` = starfsstétt code (`522 *` afgreiðsla/sala, `2331*` grunnskólakennsla,
+`2230*` hjúkrun/ljósmæður), `Kyn=0` alls, `Laun og vinnutími=3` heildarlaun,
+`Eining=2` miðgildi.
+
+Every preset carries a `kind` (`minimum`/`survey`) that drives the switcher
+badge and banner explainer, and a `source` citation. A test enforces that all
+entries are valid and within the bundled CPI range.
+
 ## Tangible comparisons (price anchors)
 
 The payoff card can express the monthly purchasing-power loss as rent, food, or
