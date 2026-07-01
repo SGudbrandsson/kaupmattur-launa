@@ -26,12 +26,13 @@ describe("PRESETS", () => {
     }
   });
 
-  it("every kind used by a preset has non-empty badge and banner copy", () => {
-    for (const p of PRESETS) {
-      const k = copy.profiles.presetKinds[p.kind];
-      expect(k).toBeDefined();
-      expect(k.badge.length).toBeGreaterThan(0);
-      expect(k.banner.length).toBeGreaterThan(0);
+  it("every flavor has non-empty badge and banner copy", () => {
+    const kinds: Array<"minimum" | "taxi" | "survey"> = ["minimum", "taxi", "survey"];
+    for (const k of kinds) {
+      const c = copy.profiles.presetKinds[k];
+      expect(c).toBeDefined();
+      expect(c.badge.length).toBeGreaterThan(0);
+      expect(c.banner.length).toBeGreaterThan(0);
     }
   });
 });

@@ -2,6 +2,7 @@ import { useEffect, useState } from "preact/hooks";
 import { copy } from "../copy";
 import type { CpiData, MonthKey } from "../lib/cpi";
 import type { SalaryEvent } from "../lib/inflation";
+import type { PresetKind } from "../lib/profiles";
 import { MONTHS_LONG, formatISK, parseAmount } from "../lib/format";
 import { AiAutofill } from "./AiAutofill";
 import { modelAvailability } from "../lib/ai/localModel";
@@ -141,7 +142,7 @@ interface SalaryFormProps {
   cpi: CpiData;
   readOnly: boolean;
   presetSource?: string;
-  presetKind?: import("../lib/profiles").PresetKind;
+  presetKind?: PresetKind;
   onChangeRow: (id: string, patch: Partial<Omit<DraftRow, "id">>) => void;
   onAddRow: () => void;
   onRemoveRow: (id: string) => void;

@@ -2,6 +2,8 @@
  * Every user-facing string lives here, in Icelandic. Components never
  * hard-code text, so a second locale can be added without touching them.
  */
+import type { PresetKind } from "./lib/profiles";
+
 export const copy = {
   hero: {
     kicker: "Kaupmáttur launa",
@@ -73,7 +75,7 @@ export const copy = {
         banner:
           "Miðgildi raunverulegra heildarlauna úr launarannsókn — ekki taxti; helmingur er yfir og helmingur undir.",
       },
-    } as Record<string, { badge: string; banner: string }>,
+    } as Record<PresetKind, { badge: string; banner: string }>,
   },
 
   lenses: {

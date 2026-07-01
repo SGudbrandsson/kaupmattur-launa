@@ -1420,6 +1420,7 @@ footer.colophon {
   margin-left: 0.4rem;
   white-space: nowrap;
 }
+/* flex-basis:100% wraps the note onto its own line — relies on .preset-banner being a wrapping flex container (display:flex; flex-wrap:wrap). */
 .preset-kind-note {
   flex-basis: 100%;
   font-size: 0.8125rem;
