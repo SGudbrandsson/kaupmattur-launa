@@ -113,6 +113,14 @@ dips, so the peak can fall between raises), and the headline shows how far today
 sits below that peak — with lifetime change as secondary context. The chart offers
 three reference frames (today's krónur / first-month krónur / keep-pace baseline).
 
+The page leads with the answer: **payoff headline → chart → salary history →
+per-month detail**. When a profile has more than five entries (every preset ships
+with ~10 years), the raw salary-history rows and the per-month "Staðan í dag" table
+each collapse behind a disclosure so the payoff and chart stay near the top instead
+of being buried under repeated cards. A short, editable profile stays fully
+expanded, and a form never collapses while you are typing — the collapse default is
+re-evaluated only on profile switch (`MANY_ENTRIES_THRESHOLD` in `src/lib/profiles.ts`).
+
 ## Development
 
 ```bash
