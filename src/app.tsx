@@ -160,13 +160,14 @@ export function App() {
           presetSource={active.source}
           presetKind={active.presetKind}
           profileKey={active.resolvedId}
+          entryCount={active.entries.length}
           onChangeRow={changeRow}
           onAddRow={addRow}
           onRemoveRow={removeRow}
           onFork={onFork}
           onAiApply={replaceRows}
         />
-        <SummaryCards events={events} cpi={cpi} profileKey={active.resolvedId} />
+        <SummaryCards events={events} cpi={cpi} profileKey={active.resolvedId} entryCount={active.entries.length} />
         <Methodology />
       </main>
     </>

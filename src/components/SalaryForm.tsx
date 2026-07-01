@@ -145,6 +145,7 @@ interface SalaryFormProps {
   presetSource?: string;
   presetKind?: PresetKind;
   profileKey: string;
+  entryCount: number;
   onChangeRow: (id: string, patch: Partial<Omit<DraftRow, "id">>) => void;
   onAddRow: () => void;
   onRemoveRow: (id: string) => void;
@@ -157,11 +158,11 @@ export function SalaryForm(props: SalaryFormProps) {
 
   const filled = props.rows.filter((r) => r.amountText.trim() !== "");
   const collapsible = filled.length > MANY_ENTRIES_THRESHOLD;
-  const [expanded, setExpanded] = useState(() => !collapsible);
+  const [expanded, setExpanded] = useState(() => props.entryCount <= MANY_ENTRIES_THRESHOLD);
   // Reset ONLY on profile switch — never key on `collapsible`, or the form would
   // collapse out from under a user who crosses the threshold while typing.
   useEffect(() => {
-    setExpanded(!collapsible);
+    setExpanded(props.entryCount <= MANY_ENTRIES_THRESHOLD);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.profileKey]);
 

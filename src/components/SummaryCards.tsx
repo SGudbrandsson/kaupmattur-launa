@@ -17,17 +17,18 @@ interface SummaryCardsProps {
   events: SalaryEvent[];
   cpi: CpiData;
   profileKey: string;
+  entryCount: number;
 }
 
-export function SummaryCards({ events, cpi, profileKey }: SummaryCardsProps) {
+export function SummaryCards({ events, cpi, profileKey, entryCount }: SummaryCardsProps) {
   const s = copy.summary;
   const [expanded, setExpanded] = useState(
-    () => events.length <= MANY_ENTRIES_THRESHOLD,
+    () => entryCount <= MANY_ENTRIES_THRESHOLD,
   );
   // Reset on profile switch only (not on every keystroke) so an in-progress
   // edit that crosses the threshold never collapses the table mid-typing.
   useEffect(() => {
-    setExpanded(events.length <= MANY_ENTRIES_THRESHOLD);
+    setExpanded(entryCount <= MANY_ENTRIES_THRESHOLD);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profileKey]);
 
