@@ -136,6 +136,17 @@ describe("resolveActive", () => {
     const store = { v: 2 as const, activeId: "gone", profiles: [] };
     expect(resolveActive(store, [preset], cpi).resolvedId).toBe(DEFAULT_PRESET_ID);
   });
+
+  it("resolveActive surfaces the preset flavor as presetKind", () => {
+    const surveyPreset: Preset = {
+      id: "preset:test", name: "Test", source: "src", kind: "survey",
+      entries: [{ month: cpi.firstMonth, amount: 500000 }],
+    };
+    const store = { v: 2 as const, activeId: "preset:test", profiles: [] };
+    const active = resolveActive(store, [surveyPreset], cpi);
+    expect(active.kind).toBe("preset");
+    expect(active.presetKind).toBe("survey");
+  });
 });
 
 describe("mutations", () => {

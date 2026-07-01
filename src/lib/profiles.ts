@@ -147,6 +147,7 @@ export interface ActiveResolved {
   kind: "user" | "preset";
   name: string;
   source?: string;
+  presetKind?: PresetKind;
   entries: SalaryEvent[];
   readOnly: boolean;
 }
@@ -239,6 +240,7 @@ export function resolveActive(
   if (preset) {
     return {
       resolvedId: preset.id, kind: "preset", name: preset.name, source: preset.source,
+      presetKind: preset.kind,
       entries: sanitizeEntries(preset.entries, cpi), readOnly: true,
     };
   }
@@ -249,6 +251,7 @@ export function resolveActive(
   const def = presets.find((p) => p.id === DEFAULT_PRESET_ID) ?? presets[0];
   return {
     resolvedId: def.id, kind: "preset", name: def.name, source: def.source,
+    presetKind: def.kind,
     entries: sanitizeEntries(def.entries, cpi), readOnly: true,
   };
 }
