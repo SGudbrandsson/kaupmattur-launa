@@ -175,8 +175,6 @@ export const copy = {
 
   summary: {
     title: "Staðan í dag",
-    setIn: (month: string) => `Laun sett í ${month}`,
-    realToday: "Kaupmáttur í dag",
     required: (amount: string) =>
       `Til að halda í við verðbólguna þyrftu launin að vera ${amount} í dag.`,
     tooNew: "Of nýtt til að verðbólgan hafi náð að bíta — fylgstu með.",

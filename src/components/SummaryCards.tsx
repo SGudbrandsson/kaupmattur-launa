@@ -33,6 +33,7 @@ export function SummaryCards({ events, cpi, profileKey, entryCount }: SummaryCar
   }, [profileKey]);
 
   if (events.length === 0) return null;
+  const collapsible = events.length > MANY_ENTRIES_THRESHOLD;
   const sorted = [...events].sort((a, b) => compareMonths(b.month, a.month));
 
   const table = (
@@ -77,15 +78,19 @@ export function SummaryCards({ events, cpi, profileKey, entryCount }: SummaryCar
   return (
     <section class="summary" aria-labelledby="summary-title">
       <h2 id="summary-title">{s.title}</h2>
-      <Disclosure
-        summary={null}
-        expanded={expanded}
-        onToggle={() => setExpanded((v) => !v)}
-        toggleLabel={expanded ? s.hide : s.showAll(events.length)}
-        regionId="summary-detail"
-      >
-        {table}
-      </Disclosure>
+      {collapsible ? (
+        <Disclosure
+          summary={null}
+          expanded={expanded}
+          onToggle={() => setExpanded((v) => !v)}
+          toggleLabel={expanded ? s.hide : s.showAll(events.length)}
+          regionId="summary-detail"
+        >
+          {table}
+        </Disclosure>
+      ) : (
+        table
+      )}
     </section>
   );
 }
