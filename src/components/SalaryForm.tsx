@@ -2,8 +2,9 @@ import { useEffect, useState } from "preact/hooks";
 import { copy } from "../copy";
 import type { CpiData, MonthKey } from "../lib/cpi";
 import type { SalaryEvent } from "../lib/inflation";
-import type { PresetKind } from "../lib/profiles";
+import { MANY_ENTRIES_THRESHOLD, historySpan, type PresetKind } from "../lib/profiles";
 import { MONTHS_LONG, formatISK, parseAmount } from "../lib/format";
+import { Disclosure } from "./Disclosure";
 import { AiAutofill } from "./AiAutofill";
 import { modelAvailability } from "../lib/ai/localModel";
 import { speechLangsAvailable, type SpeechLang } from "../lib/ai/speech";
@@ -143,6 +144,7 @@ interface SalaryFormProps {
   readOnly: boolean;
   presetSource?: string;
   presetKind?: PresetKind;
+  profileKey: string;
   onChangeRow: (id: string, patch: Partial<Omit<DraftRow, "id">>) => void;
   onAddRow: () => void;
   onRemoveRow: (id: string) => void;
@@ -152,6 +154,16 @@ interface SalaryFormProps {
 
 export function SalaryForm(props: SalaryFormProps) {
   const f = copy.form;
+
+  const filled = props.rows.filter((r) => r.amountText.trim() !== "");
+  const collapsible = filled.length > MANY_ENTRIES_THRESHOLD;
+  const [expanded, setExpanded] = useState(() => !collapsible);
+  // Reset ONLY on profile switch — never key on `collapsible`, or the form would
+  // collapse out from under a user who crosses the threshold while typing.
+  useEffect(() => {
+    setExpanded(!collapsible);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.profileKey]);
 
   const [aiReady, setAiReady] = useState(false);
   const [speechLangs, setSpeechLangs] = useState<SpeechLang[]>([]);
@@ -183,34 +195,14 @@ export function SalaryForm(props: SalaryFormProps) {
 
   const isEmpty = props.rows.every((r) => r.amountText.trim() === "");
 
-  return (
-    <section class="salary rise rise-3" aria-labelledby="salary-title">
-      <h2 id="salary-title">{f.title}</h2>
-      <p class="section-intro">{f.intro}</p>
-      <p class="form-privacy">
-        <LockIcon />
-        {copy.privacy.inline}
-      </p>
-      {aiReady && !props.readOnly && (
-        <AiAutofill
-          cpi={props.cpi}
-          onApply={props.onAiApply}
-          speechLangs={speechLangs}
-        />
-      )}
-      {props.readOnly && (
-        <div class="preset-banner">
-          <span>{copy.profiles.presetLockedBanner(props.presetSource ?? "")}</span>
-          {props.presetKind && (
-            <span class="preset-kind-note">
-              {copy.profiles.presetKinds[props.presetKind].banner}
-            </span>
-          )}
-          <button type="button" class="example-cta" onClick={props.onFork}>
-            {copy.profiles.forkCta}
-          </button>
-        </div>
-      )}
+  const span = historySpan(filled.map((r) => ({ month: r.month, amount: 0 })));
+  const spanLabel =
+    span.firstYear === span.lastYear
+      ? String(span.firstYear)
+      : `${span.firstYear}–${span.lastYear}`;
+
+  const formBody = (
+    <>
       <div class="entry-list">
         {props.rows.map((row) => {
           const error = props.errors.get(row.id);
@@ -270,6 +262,56 @@ export function SalaryForm(props: SalaryFormProps) {
       )}
       {!props.readOnly && isEmpty && (
         <p class="form-empty">{copy.profiles.emptyState}</p>
+      )}
+    </>
+  );
+
+  const expandLabel = props.readOnly ? f.showEntries : f.editHistory;
+
+  return (
+    <section class="salary rise rise-3" aria-labelledby="salary-title">
+      <h2 id="salary-title">{f.title}</h2>
+      <p class="section-intro">{f.intro}</p>
+      <p class="form-privacy">
+        <LockIcon />
+        {copy.privacy.inline}
+      </p>
+      {aiReady && !props.readOnly && (
+        <AiAutofill
+          cpi={props.cpi}
+          onApply={props.onAiApply}
+          speechLangs={speechLangs}
+        />
+      )}
+      {props.readOnly && (
+        <div class="preset-banner">
+          <span>{copy.profiles.presetLockedBanner(props.presetSource ?? "")}</span>
+          {props.presetKind && (
+            <span class="preset-kind-note">
+              {copy.profiles.presetKinds[props.presetKind].banner}
+            </span>
+          )}
+          <button type="button" class="example-cta" onClick={props.onFork}>
+            {copy.profiles.forkCta}
+          </button>
+        </div>
+      )}
+      {collapsible ? (
+        <Disclosure
+          summary={
+            <span class="history-collapsed-line numeric">
+              {f.historySummary(filled.length, spanLabel)}
+            </span>
+          }
+          expanded={expanded}
+          onToggle={() => setExpanded((v) => !v)}
+          toggleLabel={expanded ? f.hideEntries : expandLabel}
+          regionId="salary-entries"
+        >
+          {formBody}
+        </Disclosure>
+      ) : (
+        formBody
       )}
     </section>
   );

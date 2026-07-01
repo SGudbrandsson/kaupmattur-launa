@@ -1438,3 +1438,8 @@ footer.colophon {
 .disclosure-toggle:hover {
   border-color: var(--glacier);
 }
+
+.history-collapsed-line {
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
