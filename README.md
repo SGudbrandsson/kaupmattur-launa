@@ -32,6 +32,25 @@ editable copy. Storage migrates the old single-slot format to the multi-profile
 store automatically. Code: `src/lib/profiles.ts`, `src/lib/storage.ts`,
 `src/lib/profileFile.ts`, `src/components/ProfileBar.tsx`.
 
+### Refreshing presets
+
+Public presets in `src/data/presets.ts` are hand-transcribed from published
+sources (they are NOT auto-updated like the CPI, which has no equivalent API):
+
+- **Lágmarkslaun** — SGS/ASÍ lágmarkstekjur (asi.is).
+- **Sölu- og afgreiðslufólk (miðgildi)** — VR launarannsókn, miðgildi
+  heildarlauna. Each edition PDF is FlateDecode-compressed; extract text with
+  the zlib recipe in the implementation plan, read the heildarlaun-miðgildi
+  column (þús. kr × 1000), add one dated point per edition.
+- **Kennari / Hjúkrunarfræðingur (grunntaxti)** — public-sector launatöflur
+  (KÍ/Samband, Fíh/BHM). One launaflokkur/þrep, dagvinnulaun, per effective
+  date within a single samningstímabil (launaflokkur numbering is remapped
+  between agreements — don't splice across a renumbering).
+
+Every preset carries a `kind` (`minimum`/`taxi`/`survey`) that drives the
+switcher badge and banner explainer, and a `source` citation. A test enforces
+that all entries are valid and within the bundled CPI range.
+
 ## Tangible comparisons (price anchors)
 
 The payoff card can express the monthly purchasing-power loss as rent, food, or
