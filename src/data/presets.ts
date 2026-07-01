@@ -10,6 +10,7 @@ export const PRESETS: Preset[] = [
     name: "Lágmarkslaun (fullt starf)",
     source:
       "Lágmarkstekjur fyrir fullt starf skv. kjarasamningum SGS/ASÍ — asi.is",
+    kind: "minimum",
     entries: [
       { month: "2015-05", amount: 245000 },
       { month: "2016-05", amount: 260000 },

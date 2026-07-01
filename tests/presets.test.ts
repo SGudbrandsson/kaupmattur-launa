@@ -17,4 +17,11 @@ describe("PRESETS", () => {
       expect(sanitizeEntries(p.entries, cpi)).toEqual(p.entries);
     }
   });
+
+  it("every preset declares a valid kind", () => {
+    const kinds = new Set(["minimum", "taxi", "survey"]);
+    for (const p of PRESETS) {
+      expect(kinds.has(p.kind)).toBe(true);
+    }
+  });
 });

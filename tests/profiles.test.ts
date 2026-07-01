@@ -25,7 +25,7 @@ const cpi: CpiData = {
   values: { "2020-01": 100, "2020-02": 110, "2020-03": 120, "2020-04": 130 },
 };
 const preset: Preset = {
-  id: DEFAULT_PRESET_ID, name: "Lágmarkslaun", source: "ASÍ",
+  id: DEFAULT_PRESET_ID, name: "Lágmarkslaun", source: "ASÍ", kind: "minimum",
   entries: [{ month: "2020-01", amount: 300000 }],
 };
 
@@ -173,7 +173,7 @@ describe("mutations", () => {
 
   it("forkPreset creates a sanitized editable copy, active", () => {
     const cpi: CpiData = { source: "t", fetchedAt: "x", firstMonth: "2020-01", lastMonth: "2020-02", values: { "2020-01": 100, "2020-02": 110 } };
-    const s = forkPreset(base(), { id: DEFAULT_PRESET_ID, name: "Lágmarkslaun", source: "ASÍ", entries: [{ month: "2020-01", amount: 300000 }, { month: "2099-01", amount: 1 }] }, cpi);
+    const s = forkPreset(base(), { id: DEFAULT_PRESET_ID, name: "Lágmarkslaun", source: "ASÍ", kind: "minimum", entries: [{ month: "2020-01", amount: 300000 }, { month: "2099-01", amount: 1 }] }, cpi);
     expect(s.profiles.at(-1)!.name).toBe("Lágmarkslaun (afrit)");
     expect(s.profiles.at(-1)!.entries).toEqual([{ month: "2020-01", amount: 300000 }]);
     expect(s.activeId).toBe(s.profiles.at(-1)!.id);

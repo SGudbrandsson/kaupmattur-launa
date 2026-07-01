@@ -14,10 +14,13 @@ export interface Store {
   profiles: Profile[];
 }
 
+export type PresetKind = "minimum" | "taxi" | "survey";
+
 export interface Preset {
   id: string;
   name: string;
   source: string;
+  kind: PresetKind;
   entries: SalaryEvent[];
 }
 
