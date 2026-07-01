@@ -672,14 +672,21 @@ h2 {
 .summary-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.95rem;
+  font-size: 0.82rem;
 }
 .summary-table th,
 .summary-table td {
-  padding: 0.55rem 0.6rem;
+  padding: 0.4rem 0.45rem;
   text-align: right;
   border-bottom: 1px solid var(--line);
+}
+.summary-table th[scope="row"],
+.summary-table td:nth-child(2),
+.summary-table td:nth-child(3) {
   white-space: nowrap;
+}
+.summary-table .delta-chip {
+  white-space: normal;
 }
 .summary-table thead th {
   font-size: 0.8rem;
