@@ -1,42 +1,39 @@
-import type { SalaryEvent } from "./inflation";
+import type { CpiData } from "./cpi";
+import { type Store, loadStoreFrom } from "./profiles";
 
-const KEY = "kaupmattur-launa:v1";
+const V2_KEY = "kaupmattur-launa:v2";
+const V1_KEY = "kaupmattur-launa:v1";
 
-interface Persisted {
-  v: 1;
-  entries: SalaryEvent[];
-}
-
-function isValidEntry(e: unknown): e is SalaryEvent {
-  return (
-    typeof e === "object" &&
-    e !== null &&
-    typeof (e as SalaryEvent).month === "string" &&
-    /^\d{4}-\d{2}$/.test((e as SalaryEvent).month) &&
-    typeof (e as SalaryEvent).amount === "number" &&
-    Number.isSafeInteger((e as SalaryEvent).amount) &&
-    (e as SalaryEvent).amount > 0
-  );
-}
-
-/** Returns null on anything missing, corrupt or from a future version. */
-export function loadEntries(): SalaryEvent[] | null {
+/**
+ * Load the profile store. Precedence: valid v2 > migrate valid v1 > fresh.
+ * After a successful v1 migration the old v1 key is removed so a stale old
+ * bundle can't write a divergent copy that v2 would silently ignore.
+ */
+export function loadStore(cpi: CpiData): Store {
+  let v2raw: string | null = null;
+  let v1raw: string | null = null;
   try {
-    const raw = localStorage.getItem(KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as Persisted;
-    if (parsed?.v !== 1 || !Array.isArray(parsed.entries)) return null;
-    if (!parsed.entries.every(isValidEntry)) return null;
-    return parsed.entries;
+    v2raw = localStorage.getItem(V2_KEY);
+    v1raw = localStorage.getItem(V1_KEY);
   } catch {
-    return null;
+    /* storage blocked — fall through to fresh */
   }
+  const { store, migrated } = loadStoreFrom(v2raw, v1raw, cpi);
+  if (migrated) {
+    try {
+      localStorage.setItem(V2_KEY, JSON.stringify(store));
+      localStorage.removeItem(V1_KEY);
+    } catch {
+      /* ignore */
+    }
+  }
+  return store;
 }
 
-export function saveEntries(entries: SalaryEvent[]): void {
+export function saveStore(store: Store): void {
   try {
-    localStorage.setItem(KEY, JSON.stringify({ v: 1, entries } satisfies Persisted));
+    localStorage.setItem(V2_KEY, JSON.stringify(store));
   } catch {
-    // Storage may be full or blocked; the app simply won't persist.
+    /* storage may be full or blocked; the app simply won't persist */
   }
 }

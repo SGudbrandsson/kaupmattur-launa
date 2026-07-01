@@ -22,6 +22,16 @@ This isn't a policy — it's how the thing is built. (The Hagstofa API also
 sends no CORS headers, so runtime fetching of the salary calculation is
 impossible by design.)
 
+## Profiles
+
+Salary histories are saved as named **profiles** in `localStorage` — switch,
+create a new blank one, rename, delete, duplicate, or **export/import** a profile
+as a small `.json` file (all local; no network). A bundled, read-only **preset**
+(Icelandic minimum wage, cited) is available to explore; editing it forks an
+editable copy. Storage migrates the old single-slot format to the multi-profile
+store automatically. Code: `src/lib/profiles.ts`, `src/lib/storage.ts`,
+`src/lib/profileFile.ts`, `src/components/ProfileBar.tsx`.
+
 ## Tangible comparisons (price anchors)
 
 The payoff card can express the monthly purchasing-power loss as rent, food, or

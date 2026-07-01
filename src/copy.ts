@@ -31,6 +31,28 @@ export const copy = {
     pickLabel: "Berðu tapið saman við:",
   },
 
+  profiles: {
+    yourProfiles: "Þín snið",
+    presetsGroup: "Almenn snið",
+    newProfile: "Nýtt snið",
+    importFile: "Flytja inn skrá…",
+    rename: "Endurnefna",
+    exportFile: "Flytja út (skrá)",
+    duplicate: "Afrita",
+    delete: "Eyða",
+    deleteConfirm: (name: string) => `Eyða sniðinu „${name}"? Þessu er ekki hægt að afturkalla.`,
+    presetLockedBanner: (source: string) => `Almennt snið (læst) · heimild: ${source}`,
+    forkCta: "Afrita og breyta",
+    renameTitle: "Endurnefna snið",
+    save: "Vista",
+    cancel: "Hætta við",
+    emptyState: "Skráðu fyrstu launin þín hér að neðan til að sjá kaupmáttinn.",
+    importError: "Gat ekki lesið skrána.",
+    limitReached: "Hámarksfjölda sniða náð.",
+    fileTooLarge: "Skráin er of stór.",
+    switchLabel: "Veldu snið",
+  },
+
   lenses: {
     chips: {
       raise: "Launahækkun",
