@@ -92,6 +92,7 @@ export function ProfileBar(props: ProfileBarProps) {
               >
                 <span class="check" aria-hidden="true">{p.id === props.activeId ? "✓" : "🔒"}</span>
                 {p.name}
+                <span class="profile-kind-badge">{c.presetKinds[p.kind].badge}</span>
                 <span class="profile-src">{p.source}</span>
               </button>
             </li>
