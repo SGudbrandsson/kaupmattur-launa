@@ -140,6 +140,10 @@ export const copy = {
     exampleTag: "Sýnidæmi",
     exampleCta: "Prófa með mínum launum",
     exampleNote: "Þetta er sýnidæmi — skiptu því út fyrir þín eigin laun.",
+    historySummary: (count: number, span: string) => `${count} launafærslur · ${span}`,
+    editHistory: "Breyta",
+    showEntries: "Sýna færslur",
+    hideEntries: "Fela",
   },
 
   chart: {
@@ -176,6 +180,12 @@ export const copy = {
     required: (amount: string) =>
       `Til að halda í við verðbólguna þyrftu launin að vera ${amount} í dag.`,
     tooNew: "Of nýtt til að verðbólgan hafi náð að bíta — fylgstu með.",
+    showAll: (n: number) => `Sjá alla mánuði (${n})`,
+    hide: "Fela",
+    thMonth: "Mánuður",
+    thSet: "Laun",
+    thReal: "Kaupmáttur í dag",
+    thChange: "Breyting",
   },
 
   method: {
