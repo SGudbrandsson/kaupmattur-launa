@@ -1409,4 +1409,21 @@ footer.colophon {
   margin-bottom: 1.25rem;
 }
 .preset-banner .example-cta { margin-left: auto; }
+.profile-kind-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--glacier-deep);
+  background: var(--glacier-wash);
+  border-radius: 999px;
+  padding: 0.1rem 0.45rem;
+  margin-left: 0.4rem;
+  white-space: nowrap;
+}
+.preset-kind-note {
+  flex-basis: 100%;
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+  line-height: 1.4;
+}
 .form-empty { margin: 1rem 0 0; font-size: 0.9375rem; color: var(--ink-faint); }
