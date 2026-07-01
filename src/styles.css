@@ -676,11 +676,10 @@ h2 {
 }
 .summary-table th,
 .summary-table td {
-  padding: 0.4rem 0.45rem;
+  padding: 0.4rem 0.3rem;
   text-align: right;
   border-bottom: 1px solid var(--line);
 }
-.summary-table th[scope="row"],
 .summary-table td:nth-child(2),
 .summary-table td:nth-child(3) {
   white-space: nowrap;
